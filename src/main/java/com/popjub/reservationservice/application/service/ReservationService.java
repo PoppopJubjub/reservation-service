@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.popjub.reservationservice.application.dto.command.CreateReservationCommand;
+import com.popjub.reservationservice.application.dto.result.CancelReservationResult;
 import com.popjub.reservationservice.application.dto.result.CreateReservationResult;
 import com.popjub.reservationservice.application.dto.result.SearchReservationDetailResult;
 import com.popjub.reservationservice.domain.entity.Reservation;
+import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
 import com.popjub.reservationservice.infrastructure.client.StoreServicePort;
 import com.popjub.reservationservice.infrastructure.client.dto.SearchTimeslotResponse;
@@ -47,6 +49,16 @@ public class ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
 		return SearchReservationDetailResult.from(reservation);
+	}
+
+	@Transactional
+	public CancelReservationResult cancelReservation(UUID reservationId, Long userId) {
+		Reservation reservation = reservationRepository.findByUserIdAndReservationIdAndStatus(userId, reservationId,
+				ReservationStatus.COMPLETE)
+			.orElseThrow(() -> new IllegalArgumentException("본인의 예약이고, 예약 확정 상태일 경우만 취소 할 수 있습니다."));
+		reservation.cancelReservation();
+		reservationRepository.save(reservation);
+		return CancelReservationResult.from(reservation);
 	}
 
 	private String generatedQrcode() {

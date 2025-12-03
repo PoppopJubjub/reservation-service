@@ -85,4 +85,8 @@ public class Reservation extends BaseEntity {
 			.qrCode(qrCode)
 			.build();
 	}
+
+	public void cancelReservation() {
+		this.status = ReservationStatus.CANCELLED;
+	}
 }
