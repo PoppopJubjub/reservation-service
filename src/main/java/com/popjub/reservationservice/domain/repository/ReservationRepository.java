@@ -5,12 +5,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.popjub.reservationservice.domain.entity.Reservation;
+import com.popjub.reservationservice.domain.entity.ReservationStatus;
 
 public interface ReservationRepository {
 
 	Reservation save(Reservation reservation);
 
 	Optional<Reservation> findById(UUID reservationId);
+
+	Optional<Reservation> findByUserIdAndReservationIdAndStatus(
+		Long userId,
+		UUID reservationId,
+		ReservationStatus status
+	);
 
 	boolean existsByUserIdAndStoreIdAndReservationDate(
 		Long userId,

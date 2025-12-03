@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 import com.popjub.reservationservice.domain.entity.Reservation;
+import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,12 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 	@Override
 	public Optional<Reservation> findById(UUID reservationId) {
 		return jpaRepository.findById(reservationId);
+	}
+
+	@Override
+	public Optional<Reservation> findByUserIdAndReservationIdAndStatus(Long userId, UUID reservationId,
+		ReservationStatus status) {
+		return jpaRepository.findByUserIdAndReservationIdAndStatus(userId, reservationId, status);
 	}
 
 	@Override
