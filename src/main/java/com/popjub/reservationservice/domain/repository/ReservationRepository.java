@@ -32,9 +32,8 @@ public interface ReservationRepository {
 		Pageable pageable
 	);
 
-	Page<Reservation> findAllByStoreIdAndStatus(
+	Page<Reservation> findAllByStoreId(
 		UUID storeId,
-		ReservationStatus status,
 		Pageable pageable
 	);
 

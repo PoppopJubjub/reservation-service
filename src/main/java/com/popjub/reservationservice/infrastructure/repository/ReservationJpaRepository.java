@@ -30,9 +30,8 @@ public interface ReservationJpaRepository extends JpaRepository<Reservation, UUI
 		Pageable pageable
 	);
 
-	Page<Reservation> findAllByStoreIdAndStatus(
+	Page<Reservation> findAllByStoreId(
 		UUID storeId,
-		ReservationStatus status,
 		Pageable pageable
 	);
 

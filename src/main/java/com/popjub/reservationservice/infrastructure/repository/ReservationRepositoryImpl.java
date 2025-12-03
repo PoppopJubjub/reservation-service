@@ -47,8 +47,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 	}
 
 	@Override
-	public Page<Reservation> findAllByStoreIdAndStatus(UUID storeId, ReservationStatus status, Pageable pageable) {
-		return jpaRepository.findAllByStoreIdAndStatus(storeId, status, pageable);
+	public Page<Reservation> findAllByStoreId(UUID storeId, Pageable pageable) {
+		return jpaRepository.findAllByStoreId(storeId, pageable);
 	}
 
 	@Override

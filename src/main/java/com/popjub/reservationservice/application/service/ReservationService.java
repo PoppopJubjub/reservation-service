@@ -13,8 +13,8 @@ import com.popjub.reservationservice.application.dto.result.CancelReservationRes
 import com.popjub.reservationservice.application.dto.result.CreateReservationResult;
 import com.popjub.reservationservice.application.dto.result.SearchReservationDetailResult;
 import com.popjub.reservationservice.application.dto.result.SearchReservationResult;
-import com.popjub.reservationservice.application.dto.result.SearchStoreReservationByDateResult;
 import com.popjub.reservationservice.application.dto.result.SearchStoreReservationResult;
+import com.popjub.reservationservice.application.dto.result.searchStoreReservationByFilterResult;
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
@@ -73,16 +73,15 @@ public class ReservationService {
 	}
 
 	public Page<SearchStoreReservationResult> searchStoreReservation(UUID storeId, Pageable pageable) {
-		Page<Reservation> reservationPage = reservationRepository.findAllByStoreIdAndStatus(storeId,
-			ReservationStatus.COMPLETE, pageable);
+		Page<Reservation> reservationPage = reservationRepository.findAllByStoreId(storeId, pageable);
 		return reservationPage.map(SearchStoreReservationResult::from);
 	}
 
-	public Page<SearchStoreReservationByDateResult> SearchStoreReservationByDateResponse(UUID storeId,
-		LocalDate reservationDate, Pageable pageable) {
+	public Page<searchStoreReservationByFilterResult> searchStoreReservationByFilter(UUID storeId,
+		ReservationStatus status, LocalDate reservationDate, Pageable pageable) {
 		Page<Reservation> reservationPage = reservationRepository.findAllByStoreIdAndStatusAndReservationDate(storeId,
-			ReservationStatus.COMPLETE, reservationDate, pageable);
-		return reservationPage.map(SearchStoreReservationByDateResult::from);
+			status, reservationDate, pageable);
+		return reservationPage.map(searchStoreReservationByFilterResult::from);
 	}
 
 	private String generatedQrcode() {

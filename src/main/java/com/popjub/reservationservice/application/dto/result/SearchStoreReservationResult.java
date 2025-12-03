@@ -8,7 +8,7 @@ import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 
 /**
- * 스토어의 예약 완료된 예약 목록 조회 응답 DTO
+ * 스토어의 예약된 전체 예약 목록 조회 응답 DTO
  */
 public record SearchStoreReservationResult(
 	UUID reservationId,

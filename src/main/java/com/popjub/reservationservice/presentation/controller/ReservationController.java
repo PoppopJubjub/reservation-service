@@ -25,16 +25,17 @@ import com.popjub.reservationservice.application.dto.result.CancelReservationRes
 import com.popjub.reservationservice.application.dto.result.CreateReservationResult;
 import com.popjub.reservationservice.application.dto.result.SearchReservationDetailResult;
 import com.popjub.reservationservice.application.dto.result.SearchReservationResult;
-import com.popjub.reservationservice.application.dto.result.SearchStoreReservationByDateResult;
 import com.popjub.reservationservice.application.dto.result.SearchStoreReservationResult;
+import com.popjub.reservationservice.application.dto.result.searchStoreReservationByFilterResult;
 import com.popjub.reservationservice.application.service.ReservationService;
+import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.presentation.dto.request.CreateReservationRequest;
 import com.popjub.reservationservice.presentation.dto.response.CancelReservationResponse;
 import com.popjub.reservationservice.presentation.dto.response.CreateReservationResponse;
 import com.popjub.reservationservice.presentation.dto.response.SearchReservationDetailResponse;
 import com.popjub.reservationservice.presentation.dto.response.SearchReservationResponse;
-import com.popjub.reservationservice.presentation.dto.response.SearchStoreReservationByDateResponse;
 import com.popjub.reservationservice.presentation.dto.response.SearchStoreReservationResponse;
+import com.popjub.reservationservice.presentation.dto.response.searchStoreReservationByFilterResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -97,7 +98,8 @@ public class ReservationController {
 
 	/**
 	 * 예약 목록 조회
-	 * 스토어의 예약 완료된 예약 목록 조회
+	 * 스토어의 예약된 전체 예약 목록 조회
+	 * TODO: 스토어 매니저 ID 검증 로직
 	 */
 	@GetMapping("/store/{storeId}")
 	public ApiResponse<PageResponse<SearchStoreReservationResponse>> searchStoreReservation(
@@ -108,7 +110,8 @@ public class ReservationController {
 			direction = Sort.Direction.ASC
 		) Pageable pageable
 	) {
-		Page<SearchStoreReservationResult> result = reservationService.searchStoreReservation(storeId, pageable);
+		Page<SearchStoreReservationResult> result = reservationService.searchStoreReservation(storeId,
+			pageable);
 		Page<SearchStoreReservationResponse> response = result.map(SearchStoreReservationResponse::from);
 		PageResponse<SearchStoreReservationResponse> pageResponse = PageResponse.from(response);
 		return ApiResponse.of(SuccessCode.OK, pageResponse);
@@ -116,22 +119,25 @@ public class ReservationController {
 
 	/**
 	 * 예약 목록 조회
-	 * 특정 날짜의 예약 완료된 예약 목록 조회
+	 * 스토어의 특정 날짜와 예약 상태를 기준으로 예약 목록 조회
+	 * TODO: 스토어 매니저 ID 검증 로직
 	 */
 	@GetMapping("/store/{storeId}/date")
-	public ApiResponse<PageResponse<SearchStoreReservationByDateResponse>> SearchStoreReservationByDateResponse(
+	public ApiResponse<PageResponse<searchStoreReservationByFilterResponse>> SearchStoreReservationByDateResponse(
 		@PathVariable UUID storeId,
 		@RequestParam LocalDate reservationDate,
+		@RequestParam ReservationStatus status,
 		@PageableDefault(
 			size = 50,
 			sort = "createdAt",
 			direction = Sort.Direction.ASC
 		) Pageable pageable
 	) {
-		Page<SearchStoreReservationByDateResult> result = reservationService.SearchStoreReservationByDateResponse(
-			storeId, reservationDate, pageable);
-		Page<SearchStoreReservationByDateResponse> response = result.map(SearchStoreReservationByDateResponse::from);
-		PageResponse<SearchStoreReservationByDateResponse> pageResponse = PageResponse.from(response);
+		Page<searchStoreReservationByFilterResult> result = reservationService.searchStoreReservationByFilter(
+			storeId, status, reservationDate, pageable);
+		Page<searchStoreReservationByFilterResponse> response = result.map(
+			searchStoreReservationByFilterResponse::from);
+		PageResponse<searchStoreReservationByFilterResponse> pageResponse = PageResponse.from(response);
 		return ApiResponse.of(SuccessCode.OK, pageResponse);
 	}
 }
