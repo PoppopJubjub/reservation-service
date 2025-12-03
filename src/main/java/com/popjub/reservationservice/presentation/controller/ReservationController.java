@@ -78,9 +78,9 @@ public class ReservationController {
 	public ApiResponse<PageResponse<SearchReservationResponse>> searchReservation(
 		@RequestHeader("X-User-Id") Long userId,
 		@PageableDefault(
-			size = 50,
+			size = 10,
 			sort = "createdAt",
-			direction = Sort.Direction.DESC
+			direction = Sort.Direction.ASC
 		) Pageable pageable
 	) {
 		Page<SearchReservationResult> result = reservationService.searchReservation(userId, pageable);
