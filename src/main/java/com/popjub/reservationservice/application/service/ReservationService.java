@@ -2,6 +2,8 @@ package com.popjub.reservationservice.application.service;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,6 +11,7 @@ import com.popjub.reservationservice.application.dto.command.CreateReservationCo
 import com.popjub.reservationservice.application.dto.result.CancelReservationResult;
 import com.popjub.reservationservice.application.dto.result.CreateReservationResult;
 import com.popjub.reservationservice.application.dto.result.SearchReservationDetailResult;
+import com.popjub.reservationservice.application.dto.result.SearchReservationResult;
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
@@ -59,6 +62,11 @@ public class ReservationService {
 		reservation.cancelReservation();
 		reservationRepository.save(reservation);
 		return CancelReservationResult.from(reservation);
+	}
+
+	public Page<SearchReservationResult> searchReservation(Long userId, Pageable pageable) {
+		Page<Reservation> reservationPage = reservationRepository.findAllByUserId(userId, pageable);
+		return reservationPage.map(SearchReservationResult::from);
 	}
 
 	private String generatedQrcode() {

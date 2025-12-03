@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.popjub.reservationservice.domain.entity.Reservation;
@@ -37,5 +39,10 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 	@Override
 	public boolean existsByUserIdAndStoreIdAndReservationDate(Long userId, UUID storeId, LocalDate reservationDate) {
 		return jpaRepository.existsByUserIdAndStoreIdAndReservationDate(userId, storeId, reservationDate);
+	}
+
+	@Override
+	public Page<Reservation> findAllByUserId(Long userId, Pageable pageable) {
+		return jpaRepository.findAllByUserId(userId, pageable);
 	}
 }
