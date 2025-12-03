@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.popjub.common.enums.SuccessCode;
@@ -117,10 +118,10 @@ public class ReservationController {
 	 * 예약 목록 조회
 	 * 특정 날짜의 예약 완료된 예약 목록 조회
 	 */
-	@GetMapping("/store/{storeId}/{reservationDate}")
+	@GetMapping("/store/{storeId}/date")
 	public ApiResponse<PageResponse<SearchStoreReservationByDateResponse>> SearchStoreReservationByDateResponse(
 		@PathVariable UUID storeId,
-		@PathVariable LocalDate reservationDate,
+		@RequestParam LocalDate reservationDate,
 		@PageableDefault(
 			size = 50,
 			sort = "createdAt",
