@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.popjub.reservationservice.application.dto.result.SearchStoreReservationByDateResult;
+import com.popjub.reservationservice.application.dto.result.searchStoreReservationByFilterResult;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 
-public record SearchStoreReservationByDateResponse(
+public record searchStoreReservationByFilterResponse(
 	UUID reservationId,
 	Long userId,
 	UUID storeId,
@@ -17,8 +17,8 @@ public record SearchStoreReservationByDateResponse(
 	ReservationStatus status,
 	LocalDateTime createdAt
 ) {
-	public static SearchStoreReservationByDateResponse from(SearchStoreReservationByDateResult result) {
-		return new SearchStoreReservationByDateResponse(
+	public static searchStoreReservationByFilterResponse from(searchStoreReservationByFilterResult result) {
+		return new searchStoreReservationByFilterResponse(
 			result.reservationId(),
 			result.userId(),
 			result.storeId(),

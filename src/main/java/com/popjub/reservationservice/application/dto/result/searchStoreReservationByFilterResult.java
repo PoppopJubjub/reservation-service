@@ -8,9 +8,9 @@ import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 
 /**
- * 특정 날짜의 예약 완료된 예약 목록 조회 응답 DTO
+ * 스토어의 특정 날짜와 예약 상태를 기준으로 예약 목록 조회 응답 DTO
  */
-public record SearchStoreReservationByDateResult(
+public record searchStoreReservationByFilterResult(
 	UUID reservationId,
 	Long userId,
 	UUID storeId,
@@ -20,8 +20,8 @@ public record SearchStoreReservationByDateResult(
 	ReservationStatus status,
 	LocalDateTime createdAt
 ) {
-	public static SearchStoreReservationByDateResult from(Reservation reservation) {
-		return new SearchStoreReservationByDateResult(
+	public static searchStoreReservationByFilterResult from(Reservation reservation) {
+		return new searchStoreReservationByFilterResult(
 			reservation.getReservationId(),
 			reservation.getUserId(),
 			reservation.getStoreId(),
