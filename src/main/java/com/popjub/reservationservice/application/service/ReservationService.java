@@ -1,5 +1,6 @@
 package com.popjub.reservationservice.application.service;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -12,6 +13,8 @@ import com.popjub.reservationservice.application.dto.result.CancelReservationRes
 import com.popjub.reservationservice.application.dto.result.CreateReservationResult;
 import com.popjub.reservationservice.application.dto.result.SearchReservationDetailResult;
 import com.popjub.reservationservice.application.dto.result.SearchReservationResult;
+import com.popjub.reservationservice.application.dto.result.SearchStoreReservationByDateResult;
+import com.popjub.reservationservice.application.dto.result.SearchStoreReservationResult;
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
@@ -67,6 +70,19 @@ public class ReservationService {
 	public Page<SearchReservationResult> searchReservation(Long userId, Pageable pageable) {
 		Page<Reservation> reservationPage = reservationRepository.findAllByUserId(userId, pageable);
 		return reservationPage.map(SearchReservationResult::from);
+	}
+
+	public Page<SearchStoreReservationResult> searchStoreReservation(UUID storeId, Pageable pageable) {
+		Page<Reservation> reservationPage = reservationRepository.findAllByStoreIdAndStatus(storeId,
+			ReservationStatus.COMPLETE, pageable);
+		return reservationPage.map(SearchStoreReservationResult::from);
+	}
+
+	public Page<SearchStoreReservationByDateResult> SearchStoreReservationByDateResponse(UUID storeId,
+		LocalDate reservationDate, Pageable pageable) {
+		Page<Reservation> reservationPage = reservationRepository.findAllByStoreIdAndStatusAndReservationDate(storeId,
+			ReservationStatus.COMPLETE, reservationDate, pageable);
+		return reservationPage.map(SearchStoreReservationByDateResult::from);
 	}
 
 	private String generatedQrcode() {

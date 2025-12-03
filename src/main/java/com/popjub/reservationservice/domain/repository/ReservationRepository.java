@@ -31,4 +31,17 @@ public interface ReservationRepository {
 		Long userId,
 		Pageable pageable
 	);
+
+	Page<Reservation> findAllByStoreIdAndStatus(
+		UUID storeId,
+		ReservationStatus status,
+		Pageable pageable
+	);
+
+	Page<Reservation> findAllByStoreIdAndStatusAndReservationDate(
+		UUID storeId,
+		ReservationStatus status,
+		LocalDate reservationDate,
+		Pageable pageable
+	);
 }
