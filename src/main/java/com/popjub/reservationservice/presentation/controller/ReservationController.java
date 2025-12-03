@@ -14,6 +14,7 @@ import com.popjub.reservationservice.application.service.ReservationService;
 import com.popjub.reservationservice.presentation.dto.request.CreateReservationRequest;
 import com.popjub.reservationservice.presentation.dto.response.CreateReservationResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,7 +26,7 @@ public class ReservationController {
 
 	@PostMapping
 	public ApiResponse<CreateReservationResponse> createReservation(
-		@RequestBody CreateReservationRequest request,
+		@Valid @RequestBody CreateReservationRequest request,
 		@RequestHeader("X-User-Id") Long userId
 	) {
 		CreateReservationCommand command = request.toCommand(userId);
