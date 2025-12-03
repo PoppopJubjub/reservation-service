@@ -1,6 +1,7 @@
 package com.popjub.reservationservice.infrastructure.repository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
@@ -22,9 +23,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 	}
 
 	@Override
-	public Reservation findById(UUID reservationId) {
-		return jpaRepository.findById(reservationId)
-			.orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+	public Optional<Reservation> findById(UUID reservationId) {
+		return jpaRepository.findById(reservationId);
 	}
 
 	@Override

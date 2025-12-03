@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.popjub.reservationservice.application.dto.command.CreateReservationCommand;
 import com.popjub.reservationservice.application.dto.result.CreateReservationResult;
+import com.popjub.reservationservice.application.dto.result.SearchReservationDetailResult;
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
 import com.popjub.reservationservice.infrastructure.client.StoreServicePort;
@@ -40,6 +41,12 @@ public class ReservationService {
 		Reservation reservation = command.toEntity(searchTimeslotResponse, generatedQrcode());
 		reservationRepository.save(reservation);
 		return CreateReservationResult.from(reservation);
+	}
+
+	public SearchReservationDetailResult searchReservationDetail(UUID reservationId) {
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+		return SearchReservationDetailResult.from(reservation);
 	}
 
 	private String generatedQrcode() {
