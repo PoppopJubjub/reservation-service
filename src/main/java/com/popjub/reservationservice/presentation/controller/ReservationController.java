@@ -122,7 +122,7 @@ public class ReservationController {
 	 * 스토어의 특정 날짜와 예약 상태를 기준으로 예약 목록 조회
 	 * TODO: 스토어 매니저 ID 검증 로직
 	 */
-	@GetMapping("/store/{storeId}/date")
+	@GetMapping("/store/{storeId}/filter")
 	public ApiResponse<PageResponse<searchStoreReservationByFilterResponse>> SearchStoreReservationByDateResponse(
 		@PathVariable UUID storeId,
 		@RequestParam LocalDate reservationDate,
