@@ -18,6 +18,8 @@ import com.popjub.reservationservice.application.dto.result.searchStoreReservati
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
+import com.popjub.reservationservice.exception.ReservationCustomException;
+import com.popjub.reservationservice.exception.ReservationErrorCode;
 import com.popjub.reservationservice.infrastructure.client.StoreServicePort;
 import com.popjub.reservationservice.infrastructure.client.dto.SearchTimeslotResponse;
 
@@ -37,14 +39,14 @@ public class ReservationService {
 		SearchTimeslotResponse searchTimeslotResponse = storeServicePort.getTimeslot(command.timeslotId());
 
 		if (!searchTimeslotResponse.status().equals("AVAILABLE")) {
-			throw new IllegalArgumentException("해당 타임슬롯은 현재 예약가능 상태가 아닙니다.");
+			throw new ReservationCustomException(ReservationErrorCode.TIMESLOT_NOT_AVAILABLE);
 		}
 
 		if (reservationRepository.existsByUserIdAndStoreIdAndReservationDate(
 			command.userId(),
 			searchTimeslotResponse.storeId(),
 			searchTimeslotResponse.date())) {
-			throw new IllegalArgumentException("이미 해당 날짜에 팝업 스토어 예약이 존재합니다.");
+			throw new ReservationCustomException(ReservationErrorCode.DUPLICATE_RESERVATION);
 		}
 
 		Reservation reservation = command.toEntity(searchTimeslotResponse, generatedQrcode());
@@ -54,7 +56,7 @@ public class ReservationService {
 
 	public SearchReservationDetailResult searchReservationDetail(UUID reservationId) {
 		Reservation reservation = reservationRepository.findById(reservationId)
-			.orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+			.orElseThrow(() -> new ReservationCustomException(ReservationErrorCode.NOT_FOUNT_RESERVATION));
 
 		String qrCodeImage = qrCodeService.generatedQrCodeImage(reservation.getQrCode());
 		return SearchReservationDetailResult.from(reservation, qrCodeImage);
@@ -64,7 +66,7 @@ public class ReservationService {
 	public CancelReservationResult cancelReservation(UUID reservationId, Long userId) {
 		Reservation reservation = reservationRepository.findByUserIdAndReservationIdAndStatus(userId, reservationId,
 				ReservationStatus.COMPLETE)
-			.orElseThrow(() -> new IllegalArgumentException("본인의 예약이고, 예약 확정 상태일 경우만 취소 할 수 있습니다."));
+			.orElseThrow(() -> new ReservationCustomException(ReservationErrorCode.CANNOT_CANCEL_RESERVATION));
 		reservation.cancelReservation();
 		reservationRepository.save(reservation);
 		return CancelReservationResult.from(reservation);

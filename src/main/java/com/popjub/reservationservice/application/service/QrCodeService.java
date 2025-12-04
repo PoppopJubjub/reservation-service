@@ -15,6 +15,8 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.popjub.reservationservice.exception.ReservationCustomException;
+import com.popjub.reservationservice.exception.ReservationErrorCode;
 
 @Service
 public class QrCodeService {
@@ -44,7 +46,7 @@ public class QrCodeService {
 
 			return Base64.getEncoder().encodeToString(imageBytes);
 		} catch (WriterException | IOException e) {
-			throw new RuntimeException("QR 이미지 생성에 실패했습니다.", e);
+			throw new ReservationCustomException(ReservationErrorCode.QR_GENERATION_FAILED);
 		}
 	}
 }
