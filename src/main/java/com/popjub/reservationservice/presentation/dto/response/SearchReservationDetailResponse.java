@@ -14,6 +14,7 @@ public record SearchReservationDetailResponse(
 	LocalDate reservationDate,
 	Integer friendCnt,
 	String qrCode,
+	String qrCodeImage,
 	ReservationStatus status
 ) {
 	public static SearchReservationDetailResponse from(SearchReservationDetailResult result) {
@@ -25,6 +26,7 @@ public record SearchReservationDetailResponse(
 			result.reservationDate(),
 			result.friendCnt(),
 			result.qrCode(),
+			result.qrCodeImage(),
 			result.status()
 		);
 	}
