@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 상세 조회</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-complete {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-cancelled {
+            background: #ef4444;
+            color: white;
+        }
+
+        .status-checked-in {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .qr-section {
+            background: #f9fafb;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-code img {
+            display: block;
+            width: 250px;
+            height: 250px;
+        }
+
+        .qr-title {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .info-section {
+            margin-top: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6b7280;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #111827;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .reservation-id {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .footer-text {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .qr-code img {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎫 예약 정보</h1>
+        <span class="status-badge"
+              th:classappend="${response.status.name() == 'COMPLETE'} ? 'status-complete' :
+                               (${response.status.name() == 'CANCELLED'} ? 'status-cancelled' : 'status-checked-in')"
+              th:text="${response.status.displayName}">
+            예약 확정
+        </span>
+    </div>
+
+    <div class="qr-section">
+        <div class="qr-title">📱 입장 QR 코드</div>
+        <div class="qr-code">
+            <img th:if="${response.qrCodeImage != null and !response.qrCodeImage.isEmpty()}"
+                 th:src="|data:image/png;base64,${response.qrCodeImage}|"
+                 alt="QR Code">
+            <p th:if="${response.qrCodeImage == null or response.qrCodeImage.isEmpty()}"
+               style="color: #9ca3af;">
+                QR 코드를 생성할 수 없습니다.
+            </p>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-row">
+            <span class="info-label">예약 날짜</span>
+            <span class="info-value"
+                  th:text="${response.reservationDate != null ? #temporals.format(response.reservationDate, 'yyyy년 MM월 dd일') : '-'}">
+                2024년 12월 04일
+            </span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">동반 인원</span>
+            <span class="info-value">
+                <span th:text="${response.friendCnt != null ? response.friendCnt : 0}">2</span>명
+            </span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">스토어 ID</span>
+            <span class="info-value reservation-id"
+                  th:text="${response.storeId != null ? response.storeId : '-'}">
+                550e8400-e29b-41d4-a716-446655440000
+            </span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">타임슬롯 ID</span>
+            <span class="info-value reservation-id"
+                  th:text="${response.timeslotId != null ? response.timeslotId : '-'}">
+                660e8400-e29b-41d4-a716-446655440000
+            </span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p class="footer-text">방문 시 QR 코드를 제시해주세요</p>
+        <p class="reservation-id" style="margin-top: 10px;">
+            예약번호: <span th:text="${response.reservationId != null ? response.reservationId : '-'}">770e8400-e29b-41d4-a716-446655440000</span>
+        </p>
+    </div>
+</div>
+</body>
+</html>

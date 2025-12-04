@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class ReservationService {
 	private final ReservationRepository reservationRepository;
 	private final StoreServicePort storeServicePort;
+	private final QrCodeService qrCodeService;
 
 	@Transactional
 	public CreateReservationResult createReservation(CreateReservationCommand command) {
@@ -54,7 +55,9 @@ public class ReservationService {
 	public SearchReservationDetailResult searchReservationDetail(UUID reservationId) {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
-		return SearchReservationDetailResult.from(reservation);
+
+		String qrCodeImage = qrCodeService.generatedQrCodeImage(reservation.getQrCode());
+		return SearchReservationDetailResult.from(reservation, qrCodeImage);
 	}
 
 	@Transactional
