@@ -3,18 +3,15 @@ package com.popjub.reservationservice.infrastructure.client;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.popjub.reservationservice.infrastructure.client.dto.SearchTimeslotResponse;
 
 @Component
-@Profile("dev")
-public class TestStoreServiceClient implements StoreServicePort {
+public class MockStoreClient {
 	/**
 	 * 예약 생성 API 테스트를 위한 임시 데이터
 	 **/
-	@Override
 	public SearchTimeslotResponse getTimeslot(UUID timeslotId) {
 		return new SearchTimeslotResponse(
 			timeslotId,
