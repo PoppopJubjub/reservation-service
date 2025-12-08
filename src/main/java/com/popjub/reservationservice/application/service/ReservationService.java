@@ -22,6 +22,7 @@ import com.popjub.reservationservice.exception.ReservationCustomException;
 import com.popjub.reservationservice.exception.ReservationErrorCode;
 import com.popjub.reservationservice.infrastructure.client.StoreServicePort;
 import com.popjub.reservationservice.infrastructure.client.dto.SearchTimeslotResponse;
+import com.popjub.reservationservice.infrastructure.messaging.ReservationEventPublisher;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +33,7 @@ public class ReservationService {
 	private final ReservationRepository reservationRepository;
 	private final StoreServicePort storeServicePort;
 	private final QrCodeService qrCodeService;
+	private final ReservationEventPublisher eventPublisher;
 
 	@Transactional
 	public CreateReservationResult createReservation(CreateReservationCommand command) {
@@ -51,6 +53,17 @@ public class ReservationService {
 
 		Reservation reservation = command.toEntity(searchTimeslotResponse, generatedQrcode());
 		reservationRepository.save(reservation);
+
+		eventPublisher.publishReservationCreated(
+			reservation.getReservationId(),
+			reservation.getUserId(),
+			reservation.getStoreId(),
+			reservation.getTimeslotId(),
+			reservation.getReservationDate(),
+			reservation.getFriendCnt(),
+			reservation.getQrCode()
+		);
+		
 		return CreateReservationResult.from(reservation);
 	}
 
