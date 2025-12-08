@@ -2,6 +2,7 @@ spring:
   config:
     activate:
       on-profile: dev
+    import: classpath:properties/feature-flag.yml
 
   datasource:
     driver-class-name: org.postgresql.Driver
