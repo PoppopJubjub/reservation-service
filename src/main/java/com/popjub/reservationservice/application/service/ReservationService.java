@@ -18,6 +18,7 @@ import com.popjub.reservationservice.application.dto.result.searchStoreReservati
 import com.popjub.reservationservice.application.port.ReservationEventPort;
 import com.popjub.reservationservice.application.port.StoreServicePort;
 import com.popjub.reservationservice.application.port.dto.ReservationCreatedEventDto;
+import com.popjub.reservationservice.application.port.dto.TimeSlotStatus;
 import com.popjub.reservationservice.application.port.dto.TimeslotResult;
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
@@ -40,8 +41,12 @@ public class ReservationService {
 	public CreateReservationResult createReservation(CreateReservationCommand command) {
 
 		TimeslotResult timeslotResult = storeServicePort.getTimeslot(command.timeslotId());
+		// "AVAILABLE" -> TimeSlotStatus.AVAILABLE
+		TimeSlotStatus status = timeslotResult.status();
 
-		if (!timeslotResult.isAvailable(timeslotResult.status())) {
+		// 필드를 가지고 있는 객채에 메세지를 보내서 결과를 처리해라
+		// 이 방법을 수행하기 위해 Getter를 이용해서 필드를 꺼내지 말아라
+		if (status.isNotAvailable()) {
 			throw new ReservationCustomException(ReservationErrorCode.TIMESLOT_NOT_AVAILABLE);
 		}
 

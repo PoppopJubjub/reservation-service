@@ -7,9 +7,6 @@ public record TimeslotResult(
 	UUID timeslotId,
 	UUID storeId,
 	LocalDate date,
-	String status
+	TimeSlotStatus status
 ) {
-	public boolean isAvailable(String status) {
-		return !status.equals("AVAILABLE");
-	}
 }
