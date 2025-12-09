@@ -1,6 +1,7 @@
 package com.popjub.reservationservice.infrastructure.messaging;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -15,9 +16,9 @@ import lombok.NoArgsConstructor;
 public class ReservationCreatedEvent {
 	private UUID reservationId;
 	private Long userId;
-	private UUID storeId;
-	private UUID timeslotId;
+	private String storeName;
 	private LocalDate reservationDate;
+	private LocalTime reservationTime;
 	private Integer friendCnt;
 	private String qrCode;
 }

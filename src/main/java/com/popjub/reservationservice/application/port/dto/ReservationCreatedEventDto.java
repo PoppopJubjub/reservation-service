@@ -1,6 +1,7 @@
 package com.popjub.reservationservice.application.port.dto;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import com.popjub.reservationservice.domain.entity.Reservation;
@@ -8,21 +9,19 @@ import com.popjub.reservationservice.domain.entity.Reservation;
 public record ReservationCreatedEventDto(
 	UUID reservationId,
 	Long userId,
-	UUID storeId,
-	UUID timeslotId,
+	String storeName,
 	LocalDate reservationDate,
-	Integer friendCnt,
-	String qrCode
+	LocalTime reservationTime,
+	Integer friendCnt
 ) {
-	public static ReservationCreatedEventDto from(Reservation reservation) {
+	public static ReservationCreatedEventDto from(Reservation reservation, TimeslotResult timeslotResult) {
 		return new ReservationCreatedEventDto(
 			reservation.getReservationId(),
 			reservation.getUserId(),
-			reservation.getStoreId(),
-			reservation.getTimeslotId(),
+			timeslotResult.storeName(),
 			reservation.getReservationDate(),
-			reservation.getFriendCnt(),
-			reservation.getQrCode()
+			timeslotResult.reservationTime(),
+			reservation.getFriendCnt()
 		);
 	}
 }

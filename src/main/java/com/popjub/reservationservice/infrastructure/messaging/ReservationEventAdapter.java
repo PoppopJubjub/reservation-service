@@ -23,13 +23,11 @@ public class ReservationEventAdapter implements ReservationEventPort {
 		ReservationCreatedEvent event = ReservationCreatedEvent.builder()
 			.reservationId(eventDto.reservationId())
 			.userId(eventDto.userId())
-			.storeId(eventDto.storeId())
-			.timeslotId(eventDto.timeslotId())
+			.storeName(eventDto.storeName())
 			.reservationDate(eventDto.reservationDate())
+			.reservationTime(eventDto.reservationTime())
 			.friendCnt(eventDto.friendCnt())
-			.qrCode(eventDto.qrCode())
 			.build();
-
 		kafkaTemplate.send(TOPIC, event);
 	}
 }

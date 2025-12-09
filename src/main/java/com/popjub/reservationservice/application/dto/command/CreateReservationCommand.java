@@ -16,7 +16,7 @@ public record CreateReservationCommand(
 			timeslotResult.storeId(),
 			this.timeslotId,
 			this.friendCnt,
-			timeslotResult.date(),
+			timeslotResult.reservationDate(),
 			qrCode
 		);
 	}

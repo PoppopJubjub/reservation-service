@@ -35,13 +35,14 @@ public class StoreAdapter implements StoreServicePort {
 
 	@Override
 	public TimeslotResult getTimeslot(UUID timeslotId) {
-		log.info("🎯 getTimeslot 호출 - flag: {}", flag);
 		if (flag) {
 			SearchTimeslotResponse response = storeClient.getTimeslot(timeslotId);
 			return new TimeslotResult(
 				response.timeslotId(),
 				response.storeId(),
-				response.date(),
+				response.storeName(),
+				response.reservationDate(),
+				response.reservationTime(),
 				response.status()
 			);
 		}
@@ -49,7 +50,9 @@ public class StoreAdapter implements StoreServicePort {
 		return new TimeslotResult(
 			response.timeslotId(),
 			response.storeId(),
-			response.date(),
+			response.storeName(),
+			response.reservationDate(),
+			response.reservationTime(),
 			response.status()
 		);
 	}

@@ -53,14 +53,14 @@ public class ReservationService {
 		if (reservationRepository.existsByUserIdAndStoreIdAndReservationDate(
 			command.userId(),
 			timeslotResult.storeId(),
-			timeslotResult.date())) {
+			timeslotResult.reservationDate())) {
 			throw new ReservationCustomException(ReservationErrorCode.DUPLICATE_RESERVATION);
 		}
 
 		Reservation reservation = command.toEntity(timeslotResult, generatedQrcode());
 		reservationRepository.save(reservation);
 
-		ReservationCreatedEventDto eventDto = ReservationCreatedEventDto.from(reservation);
+		ReservationCreatedEventDto eventDto = ReservationCreatedEventDto.from(reservation, timeslotResult);
 		eventPort.publishReservationCreated(eventDto);
 
 		return CreateReservationResult.from(reservation);
