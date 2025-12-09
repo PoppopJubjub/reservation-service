@@ -5,6 +5,8 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.popjub.reservationservice.application.port.StoreServicePort;
+import com.popjub.reservationservice.application.port.dto.TimeslotResult;
 import com.popjub.reservationservice.infrastructure.client.dto.SearchTimeslotResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -32,11 +34,23 @@ public class StoreAdapter implements StoreServicePort {
 	boolean flag;
 
 	@Override
-	public SearchTimeslotResponse getTimeslot(UUID timeslotId) {
+	public TimeslotResult getTimeslot(UUID timeslotId) {
 		log.info("🎯 getTimeslot 호출 - flag: {}", flag);
 		if (flag) {
-			return storeClient.getTimeslot(timeslotId);
+			SearchTimeslotResponse response = storeClient.getTimeslot(timeslotId);
+			return new TimeslotResult(
+				response.timeslotId(),
+				response.storeId(),
+				response.date(),
+				response.status()
+			);
 		}
-		return mockClient.getTimeslot(timeslotId);
+		SearchTimeslotResponse response = mockClient.getTimeslot(timeslotId);
+		return new TimeslotResult(
+			response.timeslotId(),
+			response.storeId(),
+			response.date(),
+			response.status()
+		);
 	}
 }

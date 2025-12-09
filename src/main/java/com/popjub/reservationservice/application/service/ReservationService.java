@@ -15,14 +15,14 @@ import com.popjub.reservationservice.application.dto.result.SearchReservationDet
 import com.popjub.reservationservice.application.dto.result.SearchReservationResult;
 import com.popjub.reservationservice.application.dto.result.SearchStoreReservationResult;
 import com.popjub.reservationservice.application.dto.result.searchStoreReservationByFilterResult;
+import com.popjub.reservationservice.application.port.ReservationEventPort;
+import com.popjub.reservationservice.application.port.StoreServicePort;
+import com.popjub.reservationservice.application.port.dto.TimeslotResult;
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
 import com.popjub.reservationservice.exception.ReservationCustomException;
 import com.popjub.reservationservice.exception.ReservationErrorCode;
-import com.popjub.reservationservice.infrastructure.client.StoreServicePort;
-import com.popjub.reservationservice.infrastructure.client.dto.SearchTimeslotResponse;
-import com.popjub.reservationservice.infrastructure.messaging.ReservationEventPublisher;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,28 +33,28 @@ public class ReservationService {
 	private final ReservationRepository reservationRepository;
 	private final StoreServicePort storeServicePort;
 	private final QrCodeService qrCodeService;
-	private final ReservationEventPublisher eventPublisher;
+	private final ReservationEventPort eventPort;
 
 	@Transactional
 	public CreateReservationResult createReservation(CreateReservationCommand command) {
 
-		SearchTimeslotResponse searchTimeslotResponse = storeServicePort.getTimeslot(command.timeslotId());
+		TimeslotResult timeslotResult = storeServicePort.getTimeslot(command.timeslotId());
 
-		if (!searchTimeslotResponse.status().equals("AVAILABLE")) {
+		if (!timeslotResult.status().equals("AVAILABLE")) {
 			throw new ReservationCustomException(ReservationErrorCode.TIMESLOT_NOT_AVAILABLE);
 		}
 
 		if (reservationRepository.existsByUserIdAndStoreIdAndReservationDate(
 			command.userId(),
-			searchTimeslotResponse.storeId(),
-			searchTimeslotResponse.date())) {
+			timeslotResult.storeId(),
+			timeslotResult.date())) {
 			throw new ReservationCustomException(ReservationErrorCode.DUPLICATE_RESERVATION);
 		}
 
-		Reservation reservation = command.toEntity(searchTimeslotResponse, generatedQrcode());
+		Reservation reservation = command.toEntity(timeslotResult, generatedQrcode());
 		reservationRepository.save(reservation);
 
-		eventPublisher.publishReservationCreated(
+		eventPort.publishReservationCreated(
 			reservation.getReservationId(),
 			reservation.getUserId(),
 			reservation.getStoreId(),
@@ -63,7 +63,7 @@ public class ReservationService {
 			reservation.getFriendCnt(),
 			reservation.getQrCode()
 		);
-		
+
 		return CreateReservationResult.from(reservation);
 	}
 
