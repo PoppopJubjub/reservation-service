@@ -2,21 +2,21 @@ package com.popjub.reservationservice.application.dto.command;
 
 import java.util.UUID;
 
+import com.popjub.reservationservice.application.port.dto.TimeslotResult;
 import com.popjub.reservationservice.domain.entity.Reservation;
-import com.popjub.reservationservice.infrastructure.client.dto.SearchTimeslotResponse;
 
 public record CreateReservationCommand(
 	Long userId,
 	UUID timeslotId,
 	Integer friendCnt
 ) {
-	public Reservation toEntity(SearchTimeslotResponse searchTimeslotResponse, String qrCode) {
+	public Reservation toEntity(TimeslotResult timeslotResult, String qrCode) {
 		return Reservation.of(
 			this.userId,
-			searchTimeslotResponse.storeId(),
+			timeslotResult.storeId(),
 			this.timeslotId,
 			this.friendCnt,
-			searchTimeslotResponse.date(),
+			timeslotResult.reservationDate(),
 			qrCode
 		);
 	}

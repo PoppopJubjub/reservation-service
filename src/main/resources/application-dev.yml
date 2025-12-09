@@ -2,6 +2,7 @@ spring:
   config:
     activate:
       on-profile: dev
+    import: classpath:properties/feature-flag.yml
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -13,6 +14,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
 
 feign:
   client:

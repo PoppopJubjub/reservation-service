@@ -1,12 +1,10 @@
-package com.popjub.reservationservice.infrastructure.client.dto;
+package com.popjub.reservationservice.application.port.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
-import com.popjub.reservationservice.application.port.dto.TimeSlotStatus;
-
-public record SearchTimeslotResponse(
+public record TimeslotResult(
 	UUID timeslotId,
 	UUID storeId,
 	String storeName,

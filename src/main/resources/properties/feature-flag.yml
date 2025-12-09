@@ -1,0 +1,21 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+feature-flag:
+  store-service: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+feature-flag:
+  store-service: true
+
+
+
+#  Spring Boot Application <-> Event Bus(RQ, Kafka, Redis) <-> Spring Clound Config Server <-> GitHub Repository(Yml)
+#
+#  G/W
+#  시간에 따른 라우팅 정책 (yml)
