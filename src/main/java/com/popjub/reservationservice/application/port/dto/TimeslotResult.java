@@ -9,4 +9,7 @@ public record TimeslotResult(
 	LocalDate date,
 	String status
 ) {
+	public boolean isAvailable(String status) {
+		return !status.equals("AVAILABLE");
+	}
 }

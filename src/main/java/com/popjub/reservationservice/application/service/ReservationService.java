@@ -17,6 +17,7 @@ import com.popjub.reservationservice.application.dto.result.SearchStoreReservati
 import com.popjub.reservationservice.application.dto.result.searchStoreReservationByFilterResult;
 import com.popjub.reservationservice.application.port.ReservationEventPort;
 import com.popjub.reservationservice.application.port.StoreServicePort;
+import com.popjub.reservationservice.application.port.dto.ReservationCreatedEventDto;
 import com.popjub.reservationservice.application.port.dto.TimeslotResult;
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
@@ -40,7 +41,7 @@ public class ReservationService {
 
 		TimeslotResult timeslotResult = storeServicePort.getTimeslot(command.timeslotId());
 
-		if (!timeslotResult.status().equals("AVAILABLE")) {
+		if (!timeslotResult.isAvailable(timeslotResult.status())) {
 			throw new ReservationCustomException(ReservationErrorCode.TIMESLOT_NOT_AVAILABLE);
 		}
 
@@ -54,15 +55,8 @@ public class ReservationService {
 		Reservation reservation = command.toEntity(timeslotResult, generatedQrcode());
 		reservationRepository.save(reservation);
 
-		eventPort.publishReservationCreated(
-			reservation.getReservationId(),
-			reservation.getUserId(),
-			reservation.getStoreId(),
-			reservation.getTimeslotId(),
-			reservation.getReservationDate(),
-			reservation.getFriendCnt(),
-			reservation.getQrCode()
-		);
+		ReservationCreatedEventDto eventDto = ReservationCreatedEventDto.from(reservation);
+		eventPort.publishReservationCreated(eventDto);
 
 		return CreateReservationResult.from(reservation);
 	}
