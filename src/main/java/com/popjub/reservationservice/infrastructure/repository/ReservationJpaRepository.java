@@ -41,4 +41,6 @@ public interface ReservationJpaRepository extends JpaRepository<Reservation, UUI
 		LocalDate reservationDate,
 		Pageable pageable
 	);
+
+	Optional<Reservation> findByQrCode(String QrCode);
 }

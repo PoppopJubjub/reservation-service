@@ -22,15 +22,18 @@ import com.popjub.common.response.ApiResponse;
 import com.popjub.common.response.PageResponse;
 import com.popjub.reservationservice.application.dto.command.CreateReservationCommand;
 import com.popjub.reservationservice.application.dto.result.CancelReservationResult;
+import com.popjub.reservationservice.application.dto.result.CheckInResult;
 import com.popjub.reservationservice.application.dto.result.CreateReservationResult;
 import com.popjub.reservationservice.application.dto.result.SearchReservationDetailResult;
 import com.popjub.reservationservice.application.dto.result.SearchReservationResult;
 import com.popjub.reservationservice.application.dto.result.SearchStoreReservationResult;
 import com.popjub.reservationservice.application.dto.result.searchStoreReservationByFilterResult;
+import com.popjub.reservationservice.application.service.CheckInService;
 import com.popjub.reservationservice.application.service.ReservationService;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.presentation.dto.request.CreateReservationRequest;
 import com.popjub.reservationservice.presentation.dto.response.CancelReservationResponse;
+import com.popjub.reservationservice.presentation.dto.response.CheckInResponse;
 import com.popjub.reservationservice.presentation.dto.response.CreateReservationResponse;
 import com.popjub.reservationservice.presentation.dto.response.SearchReservationDetailResponse;
 import com.popjub.reservationservice.presentation.dto.response.SearchReservationResponse;
@@ -46,6 +49,7 @@ import lombok.RequiredArgsConstructor;
 public class ReservationRestController {
 
 	private final ReservationService reservationService;
+	private final CheckInService checkInService;
 
 	@PostMapping
 	public ApiResponse<CreateReservationResponse> createReservation(
@@ -139,5 +143,15 @@ public class ReservationRestController {
 			searchStoreReservationByFilterResponse::from);
 		PageResponse<searchStoreReservationByFilterResponse> pageResponse = PageResponse.from(response);
 		return ApiResponse.of(SuccessCode.OK, pageResponse);
+	}
+
+	@PutMapping("/checkin/{qrCode}")
+	public ApiResponse<CheckInResponse> checkIn(
+		@PathVariable String qrCode,
+		@RequestHeader("X-User-Id") Long userId
+	) {
+		CheckInResult result = checkInService.checkIn(qrCode, userId);
+		CheckInResponse response = CheckInResponse.from(result);
+		return ApiResponse.of(SuccessCode.OK, response);
 	}
 }
