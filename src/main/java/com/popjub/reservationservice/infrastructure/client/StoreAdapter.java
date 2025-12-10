@@ -56,4 +56,19 @@ public class StoreAdapter implements StoreServicePort {
 			response.status()
 		);
 	}
+
+	/**
+	 * 체크인 검증 API 테스트를 위한 임시 데이터
+	 * Feature Flag
+	 * - false: MockClient 사용 (dev)
+	 * - true: 실제 StoreClient 사용 (prod)
+	 **/
+	@Override
+	public boolean validateCheckIn(UUID storeId, UUID timeslotId, Long userId) {
+
+		if (flag) {
+			return storeClient.validateCheckIn(storeId, timeslotId, userId);
+		}
+		return true;
+	}
 }
