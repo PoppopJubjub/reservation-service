@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ReservationErrorCode implements BaseErrorCode {
 
-	NOT_FOUNT_RESERVATION("예약을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	NOT_FOUND_RESERVATION("예약을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	DUPLICATE_RESERVATION("이미 해당 날짜에 팝업스토어 예약이 존재합니다.", HttpStatus.CONFLICT),
 	TIMESLOT_NOT_AVAILABLE("해당 타임슬롯은 현재 예약 가능 상태가 아닙니다.", HttpStatus.BAD_REQUEST),
 	CANNOT_CANCEL_RESERVATION("취소할 수 없는 예약입니다. 본인의 예약이며 '예약 확정' 상태인 경우만 취소 가능합니다.", HttpStatus.BAD_REQUEST),
@@ -21,7 +21,8 @@ public enum ReservationErrorCode implements BaseErrorCode {
 	INVALID_QR_CODE("유효하지 않은 QR 코드입니다.", HttpStatus.BAD_REQUEST),
 	INVALID_RESERVATION_ID("유효하지 않은 예약 ID입니다.", HttpStatus.BAD_REQUEST),
 	INVALID_USER_ID("유효하지 않은 사용자 ID입니다.", HttpStatus.BAD_REQUEST),
-	INTERNAL_SERVER_ERROR("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+	INTERNAL_SERVER_ERROR("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+	NO_SHOW_ALREADY_EXISTS("이미 노쇼 처리된 예약입니다.", HttpStatus.CONFLICT);
 
 	private final String message;
 	private final HttpStatus status;
