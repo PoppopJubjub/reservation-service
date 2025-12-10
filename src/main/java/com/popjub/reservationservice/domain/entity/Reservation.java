@@ -89,4 +89,8 @@ public class Reservation extends BaseEntity {
 	public void cancelReservation() {
 		this.status = ReservationStatus.CANCELLED;
 	}
+
+	public void noShowReservation() {
+		this.status = ReservationStatus.NO_SHOW;
+	}
 }
