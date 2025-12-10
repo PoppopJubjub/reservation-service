@@ -36,7 +36,7 @@ public class NoShowService {
 		}
 
 		Reservation reservation = reservationRepository.findById(command.reservationId())
-			.orElseThrow(() -> new ReservationCustomException(ReservationErrorCode.NOT_FOUNT_RESERVATION));
+			.orElseThrow(() -> new ReservationCustomException(ReservationErrorCode.NOT_FOUND_RESERVATION));
 
 		reservation.noShowReservation();
 		reservationRepository.save(reservation);

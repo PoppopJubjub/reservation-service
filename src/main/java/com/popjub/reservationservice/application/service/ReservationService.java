@@ -68,7 +68,7 @@ public class ReservationService {
 
 	public SearchReservationDetailResult searchReservationDetail(UUID reservationId) {
 		Reservation reservation = reservationRepository.findById(reservationId)
-			.orElseThrow(() -> new ReservationCustomException(ReservationErrorCode.NOT_FOUNT_RESERVATION));
+			.orElseThrow(() -> new ReservationCustomException(ReservationErrorCode.NOT_FOUND_RESERVATION));
 
 		String qrCodeImage = qrCodeService.generatedQrCodeImage(reservation.getQrCode());
 		return SearchReservationDetailResult.from(reservation, qrCodeImage);
