@@ -10,4 +10,9 @@ public interface NotificationPort {
 		String storeName,
 		LocalTime startTime
 	);
+
+	void sendNoShowNotification(
+		Reservation reservation,
+		Integer noShowCount
+	);
 }

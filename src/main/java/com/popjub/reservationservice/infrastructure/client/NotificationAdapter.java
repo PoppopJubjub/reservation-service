@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.popjub.reservationservice.application.port.NotificationPort;
 import com.popjub.reservationservice.application.port.dto.EventType;
 import com.popjub.reservationservice.domain.entity.Reservation;
+import com.popjub.reservationservice.infrastructure.client.dto.NoShowNotificationRequest;
 import com.popjub.reservationservice.infrastructure.client.dto.ReservationNotificationRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -37,5 +38,20 @@ public class NotificationAdapter implements NotificationPort {
 			notificationServiceClient.sendReservationCreateNotification(request);
 		}
 		mockNotificationClient.sendReservationCreateNotification(request);
+	}
+
+	@Override
+	public void sendNoShowNotification(Reservation reservation, Integer noShowCount) {
+		NoShowNotificationRequest request = new NoShowNotificationRequest(
+			reservation.getReservationId(),
+			reservation.getUserId(),
+			noShowCount,
+			EventType.NO_SHOW_WARNING
+		);
+
+		if (flag) {
+			notificationServiceClient.sendNoShowNotification(request);
+		}
+		mockNotificationClient.sendNoShowNotification(request);
 	}
 }

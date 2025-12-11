@@ -2,6 +2,7 @@ package com.popjub.reservationservice.infrastructure.client;
 
 import org.springframework.stereotype.Component;
 
+import com.popjub.reservationservice.infrastructure.client.dto.NoShowNotificationRequest;
 import com.popjub.reservationservice.infrastructure.client.dto.ReservationNotificationRequest;
 
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,14 @@ public class MockNotificationClient {
 			request.storeName(),
 			request.reservationDate(),
 			request.startTime(),
+			request.eventType());
+	}
+
+	public void sendNoShowNotification(NoShowNotificationRequest request) {
+		log.info("알림 내용: 예약 ID={}, 유저 ID={}, 노쇼 횟수={}, 알림 타입={}",
+			request.reservationId(),
+			request.userId(),
+			request.noShowCount(),
 			request.eventType());
 	}
 }
