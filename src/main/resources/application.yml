@@ -35,6 +35,19 @@ spring:
         enable.idempotence: true
       acks: all
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3000
+      lettuce:
+        pool:
+          max-active: 100
+          max-idle: 50
+          min-idle: 20
+          max-wait: 3000
+
 eureka:
   client:
     service-url:
