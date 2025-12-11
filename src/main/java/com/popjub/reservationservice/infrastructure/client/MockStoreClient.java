@@ -21,7 +21,8 @@ public class MockStoreClient {
 			"디즈니 팝업 스토어",
 			LocalDate.now().plusDays(1),
 			LocalTime.of(12, 0, 0),
-			TimeSlotStatus.AVAILABLE
+			TimeSlotStatus.AVAILABLE,
+			60
 		);
 	}
 }

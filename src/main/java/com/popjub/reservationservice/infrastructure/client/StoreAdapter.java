@@ -43,7 +43,8 @@ public class StoreAdapter implements StoreServicePort {
 				response.storeName(),
 				response.reservationDate(),
 				response.reservationTime(),
-				response.status()
+				response.status(),
+				response.capacity()
 			);
 		}
 		SearchTimeslotResponse response = mockClient.getTimeslot(timeslotId);
@@ -53,7 +54,8 @@ public class StoreAdapter implements StoreServicePort {
 			response.storeName(),
 			response.reservationDate(),
 			response.reservationTime(),
-			response.status()
+			response.status(),
+			response.capacity()
 		);
 	}
 

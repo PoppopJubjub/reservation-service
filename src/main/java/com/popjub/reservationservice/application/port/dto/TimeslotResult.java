@@ -10,6 +10,7 @@ public record TimeslotResult(
 	String storeName,
 	LocalDate reservationDate,
 	LocalTime reservationTime,
-	TimeSlotStatus status
+	TimeSlotStatus status,
+	Integer capacity
 ) {
 }
