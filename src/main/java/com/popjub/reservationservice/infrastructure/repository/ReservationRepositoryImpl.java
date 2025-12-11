@@ -56,4 +56,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 		LocalDate reservationDate, Pageable pageable) {
 		return jpaRepository.findAllByStoreIdAndStatusAndReservationDate(storeId, status, reservationDate, pageable);
 	}
+
+	@Override
+	public Optional<Reservation> findByQrCode(String qrCode) {
+		return jpaRepository.findByQrCode(qrCode);
+	}
 }

@@ -6,4 +6,6 @@ import com.popjub.reservationservice.application.port.dto.TimeslotResult;
 
 public interface StoreServicePort {
 	TimeslotResult getTimeslot(UUID timeslotId);
+
+	boolean validateCheckIn(UUID storeId, UUID timeslotId, Long userId);
 }

@@ -93,4 +93,16 @@ public class Reservation extends BaseEntity {
 	public void noShowReservation() {
 		this.status = ReservationStatus.NO_SHOW;
 	}
+
+	public void checkInReservation() {
+		this.status = ReservationStatus.CHECKED_IN;
+	}
+
+	public boolean isNotCompleted() {
+		return this.status != ReservationStatus.COMPLETE;
+	}
+
+	public boolean validReservationDate(LocalDate now) {
+		return !this.reservationDate.equals(now);
+	}
 }

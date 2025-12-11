@@ -22,7 +22,10 @@ public enum ReservationErrorCode implements BaseErrorCode {
 	INVALID_RESERVATION_ID("유효하지 않은 예약 ID입니다.", HttpStatus.BAD_REQUEST),
 	INVALID_USER_ID("유효하지 않은 사용자 ID입니다.", HttpStatus.BAD_REQUEST),
 	INTERNAL_SERVER_ERROR("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-	NO_SHOW_ALREADY_EXISTS("이미 노쇼 처리된 예약입니다.", HttpStatus.CONFLICT);
+	NO_SHOW_ALREADY_EXISTS("이미 노쇼 처리된 예약입니다.", HttpStatus.CONFLICT),
+	CHECKIN_NOT_AVAILABLE("체크인 가능한 상태가 아닙니다.", HttpStatus.BAD_REQUEST),
+	INVALID_CHECK_IN_DATE("체크인 가능한 날짜가 아닙니다.", HttpStatus.BAD_REQUEST),
+	CHECKIN_VALIDATION_FAILED("체크인 검증에 실패했습니다.", HttpStatus.BAD_REQUEST);
 
 	private final String message;
 	private final HttpStatus status;

@@ -43,4 +43,6 @@ public interface ReservationRepository {
 		LocalDate reservationDate,
 		Pageable pageable
 	);
+
+	Optional<Reservation> findByQrCode(String qrCode);
 }
