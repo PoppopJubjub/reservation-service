@@ -15,9 +15,8 @@ import com.popjub.reservationservice.application.dto.result.SearchReservationDet
 import com.popjub.reservationservice.application.dto.result.SearchReservationResult;
 import com.popjub.reservationservice.application.dto.result.SearchStoreReservationResult;
 import com.popjub.reservationservice.application.dto.result.searchStoreReservationByFilterResult;
-import com.popjub.reservationservice.application.port.ReservationEventPort;
+import com.popjub.reservationservice.application.port.NotificationPort;
 import com.popjub.reservationservice.application.port.StoreServicePort;
-import com.popjub.reservationservice.application.port.dto.ReservationCreatedEventDto;
 import com.popjub.reservationservice.application.port.dto.TimeSlotStatus;
 import com.popjub.reservationservice.application.port.dto.TimeslotResult;
 import com.popjub.reservationservice.domain.entity.Reservation;
@@ -36,11 +35,20 @@ public class ReservationService {
 	private final ReservationRepository reservationRepository;
 	private final StoreServicePort storeServicePort;
 	private final QrCodeService qrCodeService;
-	private final ReservationEventPort eventPort;
 	private final RedisUtil redisUtil;
+	private final NotificationPort notificationPort;
+	private final NoShowService noShowService;
 
+	/**
+	 * 알림서비스 kafka 구현시 사용예정
+	 */
+	// private final ReservationEventPort eventPort;
 	@Transactional
 	public CreateReservationResult createReservation(CreateReservationCommand command) {
+
+		if (noShowService.isRestricted(command.userId())) {
+			throw new ReservationCustomException(ReservationErrorCode.NO_SHOW_RESTRICTED);
+		}
 
 		TimeslotResult timeslotResult = storeServicePort.getTimeslot(command.timeslotId());
 		// "AVAILABLE" -> TimeSlotStatus.AVAILABLE
@@ -70,8 +78,13 @@ public class ReservationService {
 		Reservation reservation = command.toEntity(timeslotResult, generatedQrcode());
 		reservationRepository.save(reservation);
 
-		ReservationCreatedEventDto eventDto = ReservationCreatedEventDto.from(reservation, timeslotResult);
-		eventPort.publishReservationCreated(eventDto);
+		notificationPort.sendReservationCreateNotification(
+			reservation,
+			timeslotResult.storeName(),
+			timeslotResult.reservationTime()
+		);
+		// ReservationCreatedEventDto eventDto = ReservationCreatedEventDto.from(reservation, timeslotResult);
+		// eventPort.publishReservationCreated(eventDto);
 
 		return CreateReservationResult.from(reservation);
 	}

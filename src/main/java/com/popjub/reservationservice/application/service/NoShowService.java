@@ -1,5 +1,6 @@
 package com.popjub.reservationservice.application.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import com.popjub.reservationservice.application.dto.command.CreateNoShowCommand
 import com.popjub.reservationservice.application.dto.command.CreateNoShowListCommand;
 import com.popjub.reservationservice.application.dto.result.CreateNoShowListResult;
 import com.popjub.reservationservice.application.dto.result.CreateNoShowResult;
+import com.popjub.reservationservice.application.port.NotificationPort;
 import com.popjub.reservationservice.domain.entity.NoShow;
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.repository.NoShowRepository;
@@ -28,6 +30,10 @@ public class NoShowService {
 
 	private final NoShowRepository noShowRepository;
 	private final ReservationRepository reservationRepository;
+	private final NotificationPort notificationPort;
+
+	private static final int NO_SHOW_LIMIT = 3;
+	private static final int NO_SHOW_MONTH = 6;
 
 	@Transactional
 	public CreateNoShowResult createNoShow(CreateNoShowCommand command) {
@@ -43,6 +49,9 @@ public class NoShowService {
 
 		NoShow noShow = command.toEntity();
 		noShowRepository.save(noShow);
+
+		Integer noShowCount = countNoShow(command.userId());
+		notificationPort.sendNoShowNotification(reservation, noShowCount);
 		return CreateNoShowResult.from(noShow);
 	}
 
@@ -64,5 +73,15 @@ public class NoShowService {
 			}
 		}
 		return CreateNoShowListResult.of(listResult);
+	}
+
+	public boolean isRestricted(Long userId) {
+		Integer noShowCount = countNoShow(userId);
+		return noShowCount >= NO_SHOW_LIMIT;
+	}
+
+	public Integer countNoShow(Long userId) {
+		LocalDateTime sixMonth = LocalDateTime.now().minusMonths(NO_SHOW_MONTH);
+		return noShowRepository.countByUserIdAndCreatedAtAfter(userId, sixMonth);
 	}
 }

@@ -25,7 +25,8 @@ public enum ReservationErrorCode implements BaseErrorCode {
 	NO_SHOW_ALREADY_EXISTS("이미 노쇼 처리된 예약입니다.", HttpStatus.CONFLICT),
 	CHECKIN_NOT_AVAILABLE("체크인 가능한 상태가 아닙니다.", HttpStatus.BAD_REQUEST),
 	INVALID_CHECK_IN_DATE("체크인 가능한 날짜가 아닙니다.", HttpStatus.BAD_REQUEST),
-	CHECKIN_VALIDATION_FAILED("체크인 검증에 실패했습니다.", HttpStatus.BAD_REQUEST);
+	CHECKIN_VALIDATION_FAILED("체크인 검증에 실패했습니다.", HttpStatus.BAD_REQUEST),
+	NO_SHOW_RESTRICTED("최근 6개월 내 노쇼 3회 이상으로 예약이 제한되었습니다.", HttpStatus.FORBIDDEN);
 
 	private final String message;
 	private final HttpStatus status;
