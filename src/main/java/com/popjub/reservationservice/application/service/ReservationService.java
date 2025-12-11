@@ -25,6 +25,7 @@ import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
 import com.popjub.reservationservice.exception.ReservationCustomException;
 import com.popjub.reservationservice.exception.ReservationErrorCode;
+import com.popjub.reservationservice.infrastructure.util.RedisUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +37,7 @@ public class ReservationService {
 	private final StoreServicePort storeServicePort;
 	private final QrCodeService qrCodeService;
 	private final ReservationEventPort eventPort;
+	private final RedisUtil redisUtil;
 
 	@Transactional
 	public CreateReservationResult createReservation(CreateReservationCommand command) {
@@ -50,10 +52,18 @@ public class ReservationService {
 			throw new ReservationCustomException(ReservationErrorCode.TIMESLOT_NOT_AVAILABLE);
 		}
 
+		try {
+			redisUtil.decreaseRemaining(command.timeslotId());
+		} catch (ReservationCustomException e) {
+			throw e;
+		}
+
 		if (reservationRepository.existsByUserIdAndStoreIdAndReservationDate(
 			command.userId(),
 			timeslotResult.storeId(),
 			timeslotResult.reservationDate())) {
+
+			redisUtil.increaseRemaining(command.timeslotId());
 			throw new ReservationCustomException(ReservationErrorCode.DUPLICATE_RESERVATION);
 		}
 
@@ -81,6 +91,8 @@ public class ReservationService {
 			.orElseThrow(() -> new ReservationCustomException(ReservationErrorCode.CANNOT_CANCEL_RESERVATION));
 		reservation.cancelReservation();
 		reservationRepository.save(reservation);
+
+		redisUtil.increaseRemaining(reservation.getTimeslotId());
 		return CancelReservationResult.from(reservation);
 	}
 
