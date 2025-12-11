@@ -37,6 +37,7 @@ public class ReservationService {
 	private final QrCodeService qrCodeService;
 	private final RedisUtil redisUtil;
 	private final NotificationPort notificationPort;
+	private final NoShowService noShowService;
 
 	/**
 	 * 알림서비스 kafka 구현시 사용예정
@@ -44,6 +45,10 @@ public class ReservationService {
 	// private final ReservationEventPort eventPort;
 	@Transactional
 	public CreateReservationResult createReservation(CreateReservationCommand command) {
+
+		if (noShowService.isRestricted(command.userId())) {
+			throw new ReservationCustomException(ReservationErrorCode.NO_SHOW_RESTRICTED);
+		}
 
 		TimeslotResult timeslotResult = storeServicePort.getTimeslot(command.timeslotId());
 		// "AVAILABLE" -> TimeSlotStatus.AVAILABLE

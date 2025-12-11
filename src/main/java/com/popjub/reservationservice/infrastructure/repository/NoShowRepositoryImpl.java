@@ -1,5 +1,6 @@
 package com.popjub.reservationservice.infrastructure.repository;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
@@ -24,5 +25,10 @@ public class NoShowRepositoryImpl implements NoShowRepository {
 	@Override
 	public NoShow save(NoShow noShow) {
 		return jpaRepository.save(noShow);
+	}
+
+	@Override
+	public Integer countByUserIdAndCreatedAtAfter(Long userId, LocalDateTime localDateTime) {
+		return jpaRepository.countByUserIdAndCreatedAtAfter(userId, localDateTime);
 	}
 }

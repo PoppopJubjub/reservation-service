@@ -1,5 +1,6 @@
 package com.popjub.reservationservice.application.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,9 @@ public class NoShowService {
 
 	private final NoShowRepository noShowRepository;
 	private final ReservationRepository reservationRepository;
+
+	private static final int NO_SHOW_LIMIT = 3;
+	private static final int NO_SHOW_MONTH = 6;
 
 	@Transactional
 	public CreateNoShowResult createNoShow(CreateNoShowCommand command) {
@@ -64,5 +68,15 @@ public class NoShowService {
 			}
 		}
 		return CreateNoShowListResult.of(listResult);
+	}
+
+	public boolean isRestricted(Long userId) {
+		Integer noShowCount = countNoShow(userId);
+		return noShowCount >= NO_SHOW_LIMIT;
+	}
+
+	public Integer countNoShow(Long userId) {
+		LocalDateTime sixMonth = LocalDateTime.now().minusMonths(NO_SHOW_MONTH);
+		return noShowRepository.countByUserIdAndCreatedAtAfter(userId, sixMonth);
 	}
 }
