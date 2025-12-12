@@ -15,4 +15,8 @@ public interface NotificationPort {
 		Reservation reservation,
 		Integer noShowCount
 	);
+
+	void sendCheckInNotification(
+		Reservation reservation
+	);
 }
