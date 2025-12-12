@@ -8,7 +8,7 @@ import com.popjub.reservationservice.infrastructure.client.dto.CheckInNotificati
 import com.popjub.reservationservice.infrastructure.client.dto.NoShowNotificationRequest;
 import com.popjub.reservationservice.infrastructure.client.dto.ReservationNotificationRequest;
 
-@FeignClient(name = "notification-service", url = "localhost:18082/internal/notifications")
+@FeignClient(name = "notification-service", url = "localhost:18085/internal/notifications")
 public interface NotificationServiceClient {
 
 	@PostMapping("/reservation/create")
