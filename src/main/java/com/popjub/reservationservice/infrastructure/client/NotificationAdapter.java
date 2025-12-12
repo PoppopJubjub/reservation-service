@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.popjub.reservationservice.application.port.NotificationPort;
 import com.popjub.reservationservice.application.port.dto.EventType;
 import com.popjub.reservationservice.domain.entity.Reservation;
+import com.popjub.reservationservice.infrastructure.client.dto.CheckInNotificationRequest;
 import com.popjub.reservationservice.infrastructure.client.dto.NoShowNotificationRequest;
 import com.popjub.reservationservice.infrastructure.client.dto.ReservationNotificationRequest;
 
@@ -53,5 +54,20 @@ public class NotificationAdapter implements NotificationPort {
 			notificationServiceClient.sendNoShowNotification(request);
 		}
 		mockNotificationClient.sendNoShowNotification(request);
+	}
+
+	@Override
+	public void sendCheckInNotification(Reservation reservation) {
+		CheckInNotificationRequest request = new CheckInNotificationRequest(
+			reservation.getReservationId(),
+			reservation.getUserId(),
+			reservation.getStatus(),
+			EventType.CHECKIN_COMPLETED
+		);
+
+		if (flag) {
+			notificationServiceClient.sendCheckInNotification(request);
+		}
+		mockNotificationClient.sendCheckInNotification(request);
 	}
 }

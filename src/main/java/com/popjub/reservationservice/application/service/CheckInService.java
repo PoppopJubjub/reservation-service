@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.popjub.reservationservice.application.dto.result.CheckInResult;
+import com.popjub.reservationservice.application.port.NotificationPort;
 import com.popjub.reservationservice.application.port.StoreServicePort;
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
@@ -21,6 +22,7 @@ public class CheckInService {
 
 	private final ReservationRepository reservationRepository;
 	private final StoreServicePort storeServicePort;
+	private final NotificationPort notificationPort;
 
 	@Transactional
 	public CheckInResult checkIn(String qrCode, Long userId) {
@@ -47,6 +49,7 @@ public class CheckInService {
 
 		reservation.checkInReservation();
 		reservationRepository.save(reservation);
+		notificationPort.sendCheckInNotification(reservation);
 		return CheckInResult.from(reservation);
 	}
 }
