@@ -46,9 +46,9 @@ public class RedisUtil {
 	/**
 	 * 예약 취소시 잔여석 증가 메소드
 	 */
-	public Integer increaseRemaining(UUID timeslotId) {
+	public Integer increaseRemaining(UUID timeslotId, Integer friendCnt) {
 		String key = generateKey(timeslotId);
-		Long remaining = redisTemplate.opsForValue().increment(key);
+		Long remaining = redisTemplate.opsForValue().increment(key, friendCnt);
 
 		return remaining.intValue();
 	}
@@ -56,14 +56,14 @@ public class RedisUtil {
 	/**
 	 * 예약 성공시 잔여석 감소 메소드
 	 */
-	public Integer decreaseRemaining(UUID timeslotId) {
+	public Integer decreaseRemaining(UUID timeslotId, Integer friendCnt) {
 		String key = generateKey(timeslotId);
 		if (Boolean.FALSE.equals(redisTemplate.hasKey(key))) {
 			initializeCapacity(timeslotId);
 		}
-		Long remaining = redisTemplate.opsForValue().decrement(key);
+		Long remaining = redisTemplate.opsForValue().decrement(key, friendCnt);
 		if (remaining < 0) {
-			redisTemplate.opsForValue().increment(key);
+			redisTemplate.opsForValue().increment(key, friendCnt);
 			throw new ReservationCustomException(ReservationErrorCode.NO_AVAILABLE_SEAT);
 		}
 		return remaining.intValue();
