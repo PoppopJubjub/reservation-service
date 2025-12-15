@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import com.popjub.reservationservice.application.port.dto.TimeSlotStatus;
 import com.popjub.reservationservice.infrastructure.client.dto.SearchTimeslotResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class MockStoreClient {
 	/**
@@ -23,6 +26,13 @@ public class MockStoreClient {
 			LocalTime.of(12, 0, 0),
 			TimeSlotStatus.AVAILABLE,
 			60
+		);
+	}
+
+	public static void updateTimeslotStatus(UUID timeslotId, TimeSlotStatus status) {
+		log.info("업데이트 요청 : 타임슬롯 ID={}, 타임슬롯 상태={}",
+			timeslotId,
+			status
 		);
 	}
 }

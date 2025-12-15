@@ -9,6 +9,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import com.popjub.reservationservice.application.port.dto.TimeslotResult;
+import com.popjub.reservationservice.exception.ReservationCustomException;
+import com.popjub.reservationservice.exception.ReservationErrorCode;
 import com.popjub.reservationservice.infrastructure.client.StoreAdapter;
 
 import lombok.RequiredArgsConstructor;
@@ -44,20 +46,27 @@ public class RedisUtil {
 	/**
 	 * 예약 취소시 잔여석 증가 메소드
 	 */
-	public void increaseRemaining(UUID timeslotId) {
+	public Integer increaseRemaining(UUID timeslotId) {
 		String key = generateKey(timeslotId);
-		redisTemplate.opsForValue().increment(key);
+		Long remaining = redisTemplate.opsForValue().increment(key);
+
+		return remaining.intValue();
 	}
 
 	/**
 	 * 예약 성공시 잔여석 감소 메소드
 	 */
-	public void decreaseRemaining(UUID timeslotId) {
+	public Integer decreaseRemaining(UUID timeslotId) {
 		String key = generateKey(timeslotId);
 		if (Boolean.FALSE.equals(redisTemplate.hasKey(key))) {
 			initializeCapacity(timeslotId);
 		}
-		redisTemplate.opsForValue().decrement(key);
+		Long remaining = redisTemplate.opsForValue().decrement(key);
+		if (remaining < 0) {
+			redisTemplate.opsForValue().increment(key);
+			throw new ReservationCustomException(ReservationErrorCode.NO_AVAILABLE_SEAT);
+		}
+		return remaining.intValue();
 	}
 
 	/**

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.popjub.reservationservice.application.port.StoreServicePort;
+import com.popjub.reservationservice.application.port.dto.TimeSlotStatus;
 import com.popjub.reservationservice.application.port.dto.TimeslotResult;
 import com.popjub.reservationservice.infrastructure.client.dto.SearchTimeslotResponse;
 
@@ -72,5 +73,14 @@ public class StoreAdapter implements StoreServicePort {
 			return storeClient.validateCheckIn(storeId, timeslotId, userId);
 		}
 		return true;
+	}
+
+	@Override
+	public void updateTimeslotStatus(UUID timeslotId, TimeSlotStatus status) {
+
+		if (flag) {
+			storeClient.updateTimeslotStatus(timeslotId, status);
+		}
+		MockStoreClient.updateTimeslotStatus(timeslotId, status);
 	}
 }
