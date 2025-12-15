@@ -1,6 +1,7 @@
 package com.popjub.reservationservice.infrastructure.repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,4 +44,9 @@ public interface ReservationJpaRepository extends JpaRepository<Reservation, UUI
 	);
 
 	Optional<Reservation> findByQrCode(String QrCode);
+
+	List<Reservation> findAllByTimeslotIdInAndStatus(
+		List<UUID> timeslotId,
+		ReservationStatus status
+	);
 }

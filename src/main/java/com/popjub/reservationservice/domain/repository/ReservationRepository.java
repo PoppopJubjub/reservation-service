@@ -1,6 +1,7 @@
 package com.popjub.reservationservice.domain.repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,4 +46,9 @@ public interface ReservationRepository {
 	);
 
 	Optional<Reservation> findByQrCode(String qrCode);
+
+	List<Reservation> findAllByTimeslotIdInAndStatus(
+		List<UUID> timeslotId,
+		ReservationStatus status
+	);
 }

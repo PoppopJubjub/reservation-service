@@ -3,6 +3,7 @@ package com.popjub.reservationservice.application.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import com.popjub.reservationservice.application.dto.result.CreateNoShowResult;
 import com.popjub.reservationservice.application.port.NotificationPort;
 import com.popjub.reservationservice.domain.entity.NoShow;
 import com.popjub.reservationservice.domain.entity.Reservation;
+import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.domain.repository.NoShowRepository;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
 import com.popjub.reservationservice.exception.ReservationCustomException;
@@ -83,5 +85,20 @@ public class NoShowService {
 	public Integer countNoShow(Long userId) {
 		LocalDateTime sixMonth = LocalDateTime.now().minusMonths(NO_SHOW_MONTH);
 		return noShowRepository.countByUserIdAndCreatedAtAfter(userId, sixMonth);
+	}
+
+	@Transactional
+	public void closedTimeslots(List<UUID> timeslotIds) {
+		List<Reservation> reservationList = reservationRepository
+			.findAllByTimeslotIdInAndStatus(timeslotIds, ReservationStatus.COMPLETE);
+
+		List<CreateNoShowListCommand.NoShowList> noShowList = reservationList.stream()
+			.map(reservation -> new CreateNoShowListCommand.NoShowList(
+				reservation.getUserId(),
+				reservation.getReservationId()
+			)).toList();
+
+		CreateNoShowListCommand command = new CreateNoShowListCommand(noShowList);
+		createNoShowList(command);
 	}
 }
