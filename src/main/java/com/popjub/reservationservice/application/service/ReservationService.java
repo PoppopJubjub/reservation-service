@@ -59,11 +59,15 @@ public class ReservationService {
 		if (status.isNotAvailable()) {
 			throw new ReservationCustomException(ReservationErrorCode.TIMESLOT_NOT_AVAILABLE);
 		}
-
+		Integer remaining;
 		try {
-			redisUtil.decreaseRemaining(command.timeslotId());
+			remaining = redisUtil.decreaseRemaining(command.timeslotId(), command.friendCnt() + 1);
 		} catch (ReservationCustomException e) {
 			throw e;
+		}
+
+		if (remaining == 0) {
+			storeServicePort.updateTimeslotStatus(command.timeslotId(), TimeSlotStatus.FULL);
 		}
 
 		if (reservationRepository.existsByUserIdAndStoreIdAndReservationDate(
@@ -71,7 +75,10 @@ public class ReservationService {
 			timeslotResult.storeId(),
 			timeslotResult.reservationDate())) {
 
-			redisUtil.increaseRemaining(command.timeslotId());
+			Integer restoreRemaining = redisUtil.increaseRemaining(command.timeslotId(), command.friendCnt() + 1);
+			if (remaining == 0 && restoreRemaining >= 1) {
+				storeServicePort.updateTimeslotStatus(command.timeslotId(), TimeSlotStatus.AVAILABLE);
+			}
 			throw new ReservationCustomException(ReservationErrorCode.DUPLICATE_RESERVATION);
 		}
 
@@ -105,7 +112,11 @@ public class ReservationService {
 		reservation.cancelReservation();
 		reservationRepository.save(reservation);
 
-		redisUtil.increaseRemaining(reservation.getTimeslotId());
+		Integer remaining = redisUtil.increaseRemaining(reservation.getTimeslotId(), reservation.getFriendCnt() + 1);
+
+		if (remaining >= 1) {
+			storeServicePort.updateTimeslotStatus(reservation.getTimeslotId(), TimeSlotStatus.AVAILABLE);
+		}
 		return CancelReservationResult.from(reservation);
 	}
 
