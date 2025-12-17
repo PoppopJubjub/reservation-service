@@ -20,6 +20,7 @@ public enum ReservationErrorCode implements BaseErrorCode {
 	QR_GENERATION_FAILED("QR 코드 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 	INVALID_QR_CODE("유효하지 않은 QR 코드입니다.", HttpStatus.BAD_REQUEST),
 	INVALID_RESERVATION_ID("유효하지 않은 예약 ID입니다.", HttpStatus.BAD_REQUEST),
+	INVALID_RESERVATION_ACCESS("예약 정보가 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
 	INVALID_USER_ID("유효하지 않은 사용자 ID입니다.", HttpStatus.BAD_REQUEST),
 	INTERNAL_SERVER_ERROR("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 	NO_SHOW_ALREADY_EXISTS("이미 노쇼 처리된 예약입니다.", HttpStatus.CONFLICT),

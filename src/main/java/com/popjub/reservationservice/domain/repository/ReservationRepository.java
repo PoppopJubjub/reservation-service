@@ -51,4 +51,9 @@ public interface ReservationRepository {
 		List<UUID> timeslotId,
 		ReservationStatus status
 	);
+
+	Optional<Reservation> findByReservationIdAndUserId(
+		UUID reservationId,
+		Long userId
+	);
 }

@@ -67,4 +67,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 	public List<Reservation> findAllByTimeslotIdInAndStatus(List<UUID> timeslotId, ReservationStatus status) {
 		return jpaRepository.findAllByTimeslotIdInAndStatus(timeslotId, status);
 	}
+
+	@Override
+	public Optional<Reservation> findByReservationIdAndUserId(UUID reservationId, Long userId) {
+		return jpaRepository.findByReservationIdAndUserId(reservationId, userId);
+	}
 }
