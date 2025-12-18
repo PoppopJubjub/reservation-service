@@ -14,10 +14,11 @@ import com.popjub.reservationservice.domain.entity.ReservationStatus;
 
 public interface ReservationJpaRepository extends JpaRepository<Reservation, UUID> {
 
-	boolean existsByUserIdAndStoreIdAndReservationDate(
+	boolean existsByUserIdAndStoreIdAndReservationDateAndStatusNot(
 		Long userId,
 		UUID storeId,
-		LocalDate reservationDate
+		LocalDate reservationDate,
+		ReservationStatus status
 	);
 
 	Optional<Reservation> findByUserIdAndReservationIdAndStatus(

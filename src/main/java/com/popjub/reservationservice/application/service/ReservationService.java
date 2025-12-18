@@ -70,10 +70,11 @@ public class ReservationService {
 			storeServicePort.updateTimeslotStatus(command.timeslotId(), TimeSlotStatus.FULL);
 		}
 
-		if (reservationRepository.existsByUserIdAndStoreIdAndReservationDate(
+		if (reservationRepository.existsByUserIdAndStoreIdAndReservationDateAndStatusNot(
 			command.userId(),
 			timeslotResult.storeId(),
-			timeslotResult.reservationDate())) {
+			timeslotResult.reservationDate(),
+			ReservationStatus.CANCELLED)) {
 
 			Integer restoreRemaining = redisUtil.increaseRemaining(command.timeslotId(), command.friendCnt() + 1);
 			if (remaining == 0 && restoreRemaining >= 1) {

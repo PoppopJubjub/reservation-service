@@ -38,8 +38,10 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 	}
 
 	@Override
-	public boolean existsByUserIdAndStoreIdAndReservationDate(Long userId, UUID storeId, LocalDate reservationDate) {
-		return jpaRepository.existsByUserIdAndStoreIdAndReservationDate(userId, storeId, reservationDate);
+	public boolean existsByUserIdAndStoreIdAndReservationDateAndStatusNot(Long userId, UUID storeId,
+		LocalDate reservationDate, ReservationStatus status) {
+		return jpaRepository.existsByUserIdAndStoreIdAndReservationDateAndStatusNot(userId, storeId, reservationDate,
+			status);
 	}
 
 	@Override
