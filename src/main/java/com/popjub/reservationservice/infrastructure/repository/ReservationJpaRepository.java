@@ -49,4 +49,10 @@ public interface ReservationJpaRepository extends JpaRepository<Reservation, UUI
 		List<UUID> timeslotId,
 		ReservationStatus status
 	);
+
+	Optional<Reservation> findByReservationIdAndUserIdAndStoreId(
+		UUID reservationId,
+		Long userId,
+		UUID storeId
+	);
 }

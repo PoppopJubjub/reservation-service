@@ -140,4 +140,11 @@ public class ReservationService {
 	private String generatedQrcode() {
 		return UUID.randomUUID().toString();
 	}
+
+	public ReservationStatus validReservation(UUID reservationId, Long userId, UUID storeId) {
+		Reservation reservation = reservationRepository.findByReservationIdAndUserIdAndStoreId(reservationId, userId,
+				storeId)
+			.orElseThrow(() -> new ReservationCustomException(ReservationErrorCode.INVALID_RESERVATION_ACCESS));
+		return reservation.getStatus();
+	}
 }

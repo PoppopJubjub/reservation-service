@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.popjub.reservationservice.application.service.NoShowService;
+import com.popjub.reservationservice.application.service.ReservationService;
+import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.infrastructure.util.RedisUtil;
+import com.popjub.reservationservice.presentation.dto.request.ReservationValidRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +24,7 @@ public class ReservationInternalController {
 
 	private final RedisUtil redisUtil;
 	private final NoShowService noShowService;
+	private final ReservationService reservationService;
 
 	@PostMapping("/capacities")
 	public Map<UUID, Integer> getRemaining(
@@ -33,5 +37,16 @@ public class ReservationInternalController {
 	public void closedTimeslots(
 		@RequestBody List<UUID> timeslotIds) {
 		noShowService.closedTimeslots(timeslotIds);
+	}
+
+	@PostMapping("/validate")
+	public ReservationStatus reservationValidate(
+		@RequestBody ReservationValidRequest request
+	) {
+		return reservationService.validReservation(
+			request.reservationId(),
+			request.userId(),
+			request.storeId()
+		);
 	}
 }
