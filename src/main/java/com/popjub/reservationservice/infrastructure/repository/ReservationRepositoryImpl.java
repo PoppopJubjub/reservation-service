@@ -69,7 +69,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 	}
 
 	@Override
-	public Optional<Reservation> findByReservationIdAndUserId(UUID reservationId, Long userId) {
-		return jpaRepository.findByReservationIdAndUserId(reservationId, userId);
+	public Optional<Reservation> findByReservationIdAndUserIdAndStoreId(UUID reservationId, Long userId, UUID storeId) {
+		return jpaRepository.findByReservationIdAndUserIdAndStoreId(reservationId, userId, storeId);
 	}
 }

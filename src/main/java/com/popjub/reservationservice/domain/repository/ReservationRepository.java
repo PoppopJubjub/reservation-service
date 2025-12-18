@@ -52,8 +52,9 @@ public interface ReservationRepository {
 		ReservationStatus status
 	);
 
-	Optional<Reservation> findByReservationIdAndUserId(
+	Optional<Reservation> findByReservationIdAndUserIdAndStoreId(
 		UUID reservationId,
-		Long userId
+		Long userId,
+		UUID storeId
 	);
 }

@@ -4,17 +4,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.popjub.reservationservice.application.service.NoShowService;
 import com.popjub.reservationservice.application.service.ReservationService;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.infrastructure.util.RedisUtil;
+import com.popjub.reservationservice.presentation.dto.request.ReservationValidRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,11 +39,14 @@ public class ReservationInternalController {
 		noShowService.closedTimeslots(timeslotIds);
 	}
 
-	@PostMapping("/{reservationId}/validate")
+	@PostMapping("/validate")
 	public ReservationStatus reservationValidate(
-		@PathVariable UUID reservationId,
-		@RequestParam Long userId
+		@RequestBody ReservationValidRequest request
 	) {
-		return reservationService.validReservation(reservationId, userId);
+		return reservationService.validReservation(
+			request.reservationId(),
+			request.userId(),
+			request.storeId()
+		);
 	}
 }

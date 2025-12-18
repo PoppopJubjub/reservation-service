@@ -50,8 +50,9 @@ public interface ReservationJpaRepository extends JpaRepository<Reservation, UUI
 		ReservationStatus status
 	);
 
-	Optional<Reservation> findByReservationIdAndUserId(
+	Optional<Reservation> findByReservationIdAndUserIdAndStoreId(
 		UUID reservationId,
-		Long userId
+		Long userId,
+		UUID storeId
 	);
 }
