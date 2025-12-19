@@ -56,24 +56,25 @@ public class ReservationService {
 
 		// 필드를 가지고 있는 객채에 메세지를 보내서 결과를 처리해라
 		// 이 방법을 수행하기 위해 Getter를 이용해서 필드를 꺼내지 말아라
+		if (timeslotResult.reservationTimeValid()) {
+			throw new ReservationCustomException(ReservationErrorCode.PAST_RESERVATION_TIME);
+		}
 		if (status.isNotAvailable()) {
 			throw new ReservationCustomException(ReservationErrorCode.TIMESLOT_NOT_AVAILABLE);
 		}
 		Integer remaining;
-		try {
-			remaining = redisUtil.decreaseRemaining(command.timeslotId(), command.friendCnt() + 1);
-		} catch (ReservationCustomException e) {
-			throw e;
-		}
+
+		remaining = redisUtil.decreaseRemaining(command.timeslotId(), command.friendCnt() + 1);
 
 		if (remaining == 0) {
 			storeServicePort.updateTimeslotStatus(command.timeslotId(), TimeSlotStatus.FULL);
 		}
 
-		if (reservationRepository.existsByUserIdAndStoreIdAndReservationDate(
+		if (reservationRepository.existsByUserIdAndStoreIdAndReservationDateAndStatusNot(
 			command.userId(),
 			timeslotResult.storeId(),
-			timeslotResult.reservationDate())) {
+			timeslotResult.reservationDate(),
+			ReservationStatus.CANCELLED)) {
 
 			Integer restoreRemaining = redisUtil.increaseRemaining(command.timeslotId(), command.friendCnt() + 1);
 			if (remaining == 0 && restoreRemaining >= 1) {

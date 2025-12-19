@@ -23,10 +23,12 @@ public interface ReservationRepository {
 		ReservationStatus status
 	);
 
-	boolean existsByUserIdAndStoreIdAndReservationDate(
+	boolean existsByUserIdAndStoreIdAndReservationDateAndStatusNot(
 		Long userId,
 		UUID storeId,
-		LocalDate reservationDate);
+		LocalDate reservationDate,
+		ReservationStatus status
+	);
 
 	Page<Reservation> findAllByUserId(
 		Long userId,

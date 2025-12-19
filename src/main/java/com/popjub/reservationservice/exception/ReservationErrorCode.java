@@ -28,7 +28,8 @@ public enum ReservationErrorCode implements BaseErrorCode {
 	INVALID_CHECK_IN_DATE("체크인 가능한 날짜가 아닙니다.", HttpStatus.BAD_REQUEST),
 	CHECKIN_VALIDATION_FAILED("체크인 검증에 실패했습니다.", HttpStatus.BAD_REQUEST),
 	NO_SHOW_RESTRICTED("최근 6개월 내 노쇼 3회 이상으로 예약이 제한되었습니다.", HttpStatus.FORBIDDEN),
-	NO_AVAILABLE_SEAT("예약 가능한 잔여석이 없습니다.", HttpStatus.BAD_REQUEST);
+	NO_AVAILABLE_SEAT("예약 가능한 잔여석이 없습니다.", HttpStatus.BAD_REQUEST),
+	PAST_RESERVATION_TIME("과거 시간으로 예약할 수 없습니다.", HttpStatus.BAD_REQUEST);
 
 	private final String message;
 	private final HttpStatus status;
