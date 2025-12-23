@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 import com.popjub.reservationservice.application.port.RemainingPort;
 import com.popjub.reservationservice.application.port.dto.TimeslotResult;
 import com.popjub.reservationservice.domain.vo.RemainingCapacity;
-import com.popjub.reservationservice.exception.ReservationCustomException;
-import com.popjub.reservationservice.exception.ReservationErrorCode;
+import com.popjub.reservationservice.global.exception.ReservationCustomException;
+import com.popjub.reservationservice.global.exception.ReservationErrorCode;
 import com.popjub.reservationservice.infrastructure.client.StoreAdapter;
 
 import lombok.RequiredArgsConstructor;

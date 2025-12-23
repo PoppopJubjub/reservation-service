@@ -10,8 +10,8 @@ import com.popjub.reservationservice.application.port.NotificationPort;
 import com.popjub.reservationservice.application.port.StoreServicePort;
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
-import com.popjub.reservationservice.exception.ReservationCustomException;
-import com.popjub.reservationservice.exception.ReservationErrorCode;
+import com.popjub.reservationservice.global.exception.ReservationCustomException;
+import com.popjub.reservationservice.global.exception.ReservationErrorCode;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.popjub.reservationservice.exception;
+package com.popjub.reservationservice.global.exception;
 
 import org.springframework.http.HttpStatus;
 
