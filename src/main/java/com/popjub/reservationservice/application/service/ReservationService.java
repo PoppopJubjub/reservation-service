@@ -15,16 +15,18 @@ import com.popjub.reservationservice.application.dto.result.SearchReservationDet
 import com.popjub.reservationservice.application.dto.result.SearchReservationResult;
 import com.popjub.reservationservice.application.dto.result.SearchStoreReservationResult;
 import com.popjub.reservationservice.application.dto.result.searchStoreReservationByFilterResult;
-import com.popjub.reservationservice.application.port.NotificationPort;
+import com.popjub.reservationservice.application.port.RemainingPort;
 import com.popjub.reservationservice.application.port.StoreServicePort;
 import com.popjub.reservationservice.application.port.dto.TimeSlotStatus;
 import com.popjub.reservationservice.application.port.dto.TimeslotResult;
+import com.popjub.reservationservice.application.valid.ReservationValidator;
+import com.popjub.reservationservice.application.valid.TimeslotValidator;
 import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
+import com.popjub.reservationservice.domain.vo.RemainingCapacity;
 import com.popjub.reservationservice.exception.ReservationCustomException;
 import com.popjub.reservationservice.exception.ReservationErrorCode;
-import com.popjub.reservationservice.infrastructure.util.RedisUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,9 +37,9 @@ public class ReservationService {
 	private final ReservationRepository reservationRepository;
 	private final StoreServicePort storeServicePort;
 	private final QrCodeService qrCodeService;
-	private final RedisUtil redisUtil;
-	private final NotificationPort notificationPort;
-	private final NoShowService noShowService;
+	private final RemainingPort remainingPort;
+	private final ReservationValidator reservationValidator;
+	private final TimeslotValidator timeslotValidator;
 
 	/**
 	 * 알림서비스 kafka 구현시 사용예정
@@ -45,56 +47,22 @@ public class ReservationService {
 	// private final ReservationEventPort eventPort;
 	@Transactional
 	public CreateReservationResult createReservation(CreateReservationCommand command) {
-
-		if (noShowService.isRestricted(command.userId())) {
-			throw new ReservationCustomException(ReservationErrorCode.NO_SHOW_RESTRICTED);
-		}
-
 		TimeslotResult timeslotResult = storeServicePort.getTimeslot(command.timeslotId());
-		// "AVAILABLE" -> TimeSlotStatus.AVAILABLE
-		TimeSlotStatus status = timeslotResult.status();
 
-		// 필드를 가지고 있는 객채에 메세지를 보내서 결과를 처리해라
-		// 이 방법을 수행하기 위해 Getter를 이용해서 필드를 꺼내지 말아라
-		if (timeslotResult.reservationTimeValid()) {
-			throw new ReservationCustomException(ReservationErrorCode.PAST_RESERVATION_TIME);
-		}
-		if (status.isNotAvailable()) {
-			throw new ReservationCustomException(ReservationErrorCode.TIMESLOT_NOT_AVAILABLE);
-		}
-		Integer remaining;
+		timeslotValidator.validateTimeslot(timeslotResult);
 
-		remaining = redisUtil.decreaseRemaining(command.timeslotId(), command.friendCnt() + 1);
+		reservationValidator.validate(command, timeslotResult.storeId(), timeslotResult.reservationDate());
 
-		if (remaining == 0) {
+		RemainingCapacity remainingCapacity = remainingPort.decrease(command.timeslotId(), command.friendCnt() + 1);
+
+		if (remainingCapacity.isZero()) {
 			storeServicePort.updateTimeslotStatus(command.timeslotId(), TimeSlotStatus.FULL);
-		}
-
-		if (reservationRepository.existsByUserIdAndStoreIdAndReservationDateAndStatusNot(
-			command.userId(),
-			timeslotResult.storeId(),
-			timeslotResult.reservationDate(),
-			ReservationStatus.CANCELLED)) {
-
-			Integer restoreRemaining = redisUtil.increaseRemaining(command.timeslotId(), command.friendCnt() + 1);
-			if (remaining == 0 && restoreRemaining >= 1) {
-				storeServicePort.updateTimeslotStatus(command.timeslotId(), TimeSlotStatus.AVAILABLE);
-			}
-			throw new ReservationCustomException(ReservationErrorCode.DUPLICATE_RESERVATION);
 		}
 
 		Reservation reservation = command.toEntity(timeslotResult, generatedQrcode());
 		reservationRepository.save(reservation);
 
-		notificationPort.sendReservationCreateNotification(
-			reservation,
-			timeslotResult.storeName(),
-			timeslotResult.reservationTime()
-		);
-		// ReservationCreatedEventDto eventDto = ReservationCreatedEventDto.from(reservation, timeslotResult);
-		// eventPort.publishReservationCreated(eventDto);
-
-		return CreateReservationResult.from(reservation);
+		return CreateReservationResult.from(reservation, timeslotResult.storeName(), timeslotResult.reservationTime());
 	}
 
 	public SearchReservationDetailResult searchReservationDetail(UUID reservationId) {
@@ -113,9 +81,10 @@ public class ReservationService {
 		reservation.cancelReservation();
 		reservationRepository.save(reservation);
 
-		Integer remaining = redisUtil.increaseRemaining(reservation.getTimeslotId(), reservation.getFriendCnt() + 1);
+		RemainingCapacity remainingCapacity = remainingPort.increase(reservation.getTimeslotId(),
+			reservation.getFriendCnt() + 1);
 
-		if (remaining >= 1) {
+		if (remainingCapacity.isNotZero()) {
 			storeServicePort.updateTimeslotStatus(reservation.getTimeslotId(), TimeSlotStatus.AVAILABLE);
 		}
 		return CancelReservationResult.from(reservation);

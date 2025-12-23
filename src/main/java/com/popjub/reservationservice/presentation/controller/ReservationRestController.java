@@ -29,6 +29,7 @@ import com.popjub.reservationservice.application.dto.result.SearchReservationRes
 import com.popjub.reservationservice.application.dto.result.SearchStoreReservationResult;
 import com.popjub.reservationservice.application.dto.result.searchStoreReservationByFilterResult;
 import com.popjub.reservationservice.application.service.CheckInService;
+import com.popjub.reservationservice.application.service.ReservationFacade;
 import com.popjub.reservationservice.application.service.ReservationService;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.presentation.dto.request.CreateReservationRequest;
@@ -48,6 +49,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReservationRestController {
 
+	private final ReservationFacade reservationFacade;
 	private final ReservationService reservationService;
 	private final CheckInService checkInService;
 
@@ -57,7 +59,7 @@ public class ReservationRestController {
 		@RequestHeader("X-User-Id") Long userId
 	) {
 		CreateReservationCommand command = request.toCommand(userId);
-		CreateReservationResult result = reservationService.createReservation(command);
+		CreateReservationResult result = reservationFacade.createReservation(command);
 		CreateReservationResponse response = CreateReservationResponse.from(result);
 		return ApiResponse.of(SuccessCode.CREATED, response);
 	}

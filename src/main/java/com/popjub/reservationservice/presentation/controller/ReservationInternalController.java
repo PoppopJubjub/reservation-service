@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.popjub.reservationservice.application.port.RemainingPort;
 import com.popjub.reservationservice.application.service.NoShowService;
 import com.popjub.reservationservice.application.service.ReservationService;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
-import com.popjub.reservationservice.infrastructure.util.RedisUtil;
 import com.popjub.reservationservice.presentation.dto.request.ReservationValidRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/internal/reservations")
 public class ReservationInternalController {
 
-	private final RedisUtil redisUtil;
+	private final RemainingPort remainingPort;
 	private final NoShowService noShowService;
 	private final ReservationService reservationService;
 
@@ -30,7 +30,7 @@ public class ReservationInternalController {
 	public Map<UUID, Integer> getRemaining(
 		@RequestBody List<UUID> timeslotIds
 	) {
-		return redisUtil.getRemaining(timeslotIds);
+		return remainingPort.getRemaining(timeslotIds);
 	}
 
 	@PostMapping("/timeslots/closed")
