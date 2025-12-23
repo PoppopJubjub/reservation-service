@@ -15,8 +15,8 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.popjub.reservationservice.exception.ReservationCustomException;
-import com.popjub.reservationservice.exception.ReservationErrorCode;
+import com.popjub.reservationservice.global.exception.ReservationCustomException;
+import com.popjub.reservationservice.global.exception.ReservationErrorCode;
 
 @Service
 public class QrCodeService {

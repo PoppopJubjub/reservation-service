@@ -3,8 +3,8 @@ package com.popjub.reservationservice.application.valid;
 import org.springframework.stereotype.Component;
 
 import com.popjub.reservationservice.application.port.dto.TimeslotResult;
-import com.popjub.reservationservice.exception.ReservationCustomException;
-import com.popjub.reservationservice.exception.ReservationErrorCode;
+import com.popjub.reservationservice.global.exception.ReservationCustomException;
+import com.popjub.reservationservice.global.exception.ReservationErrorCode;
 
 @Component
 public class TimeslotValidator {

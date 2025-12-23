@@ -18,8 +18,8 @@ import com.popjub.reservationservice.domain.entity.Reservation;
 import com.popjub.reservationservice.domain.entity.ReservationStatus;
 import com.popjub.reservationservice.domain.repository.NoShowRepository;
 import com.popjub.reservationservice.domain.repository.ReservationRepository;
-import com.popjub.reservationservice.exception.ReservationCustomException;
-import com.popjub.reservationservice.exception.ReservationErrorCode;
+import com.popjub.reservationservice.global.exception.ReservationCustomException;
+import com.popjub.reservationservice.global.exception.ReservationErrorCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
