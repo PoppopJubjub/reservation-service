@@ -1,4 +1,4 @@
-package com.popjub.reservationservice.infrastructure.util;
+package com.popjub.reservationservice.infrastructure.redis;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +8,9 @@ import java.util.UUID;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import com.popjub.reservationservice.application.port.RemainingPort;
 import com.popjub.reservationservice.application.port.dto.TimeslotResult;
+import com.popjub.reservationservice.domain.vo.RemainingCapacity;
 import com.popjub.reservationservice.exception.ReservationCustomException;
 import com.popjub.reservationservice.exception.ReservationErrorCode;
 import com.popjub.reservationservice.infrastructure.client.StoreAdapter;
@@ -17,11 +19,34 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class RedisUtil {
+public class RedisRemainingAdapter implements RemainingPort {
 
 	private final RedisTemplate<String, Integer> redisTemplate;
 	private final StoreAdapter storeAdapter;
 
+	@Override
+	public RemainingCapacity decrease(UUID timeslotId, int count) {
+		String key = generateKey(timeslotId);
+		if (Boolean.FALSE.equals(redisTemplate.hasKey(key))) {
+			initializeCapacity(timeslotId);
+		}
+		Long remaining = redisTemplate.opsForValue().decrement(key, count);
+		if (remaining < 0) {
+			redisTemplate.opsForValue().increment(key, count);
+			throw new ReservationCustomException(ReservationErrorCode.NO_AVAILABLE_SEAT);
+		}
+		return RemainingCapacity.from(remaining.intValue());
+	}
+
+	@Override
+	public RemainingCapacity increase(UUID timeslotId, int count) {
+		String key = generateKey(timeslotId);
+		Long remaining = redisTemplate.opsForValue().increment(key, count);
+
+		return RemainingCapacity.from(remaining.intValue());
+	}
+
+	@Override
 	public Map<UUID, Integer> getRemaining(List<UUID> timeslotIds) {
 		Map<UUID, Integer> result = new HashMap<>();
 
@@ -44,35 +69,7 @@ public class RedisUtil {
 	}
 
 	/**
-	 * 예약 취소시 잔여석 증가 메소드
-	 */
-	public Integer increaseRemaining(UUID timeslotId, Integer friendCnt) {
-		String key = generateKey(timeslotId);
-		Long remaining = redisTemplate.opsForValue().increment(key, friendCnt);
-
-		return remaining.intValue();
-	}
-
-	/**
-	 * 예약 성공시 잔여석 감소 메소드
-	 */
-	public Integer decreaseRemaining(UUID timeslotId, Integer friendCnt) {
-		String key = generateKey(timeslotId);
-		if (Boolean.FALSE.equals(redisTemplate.hasKey(key))) {
-			initializeCapacity(timeslotId);
-		}
-		Long remaining = redisTemplate.opsForValue().decrement(key, friendCnt);
-		if (remaining < 0) {
-			redisTemplate.opsForValue().increment(key, friendCnt);
-			throw new ReservationCustomException(ReservationErrorCode.NO_AVAILABLE_SEAT);
-		}
-		return remaining.intValue();
-	}
-
-	/**
 	 * Redis 초기화 (Lazy init)
-	 * 1. Timeslot 서비스에서 capacity 조회
-	 * 2. Redis에 저장
 	 */
 	private Integer initializeCapacity(UUID timeslotId) {
 		TimeslotResult timeslot = storeAdapter.getTimeslot(timeslotId);
@@ -80,6 +77,7 @@ public class RedisUtil {
 
 		String key = generateKey(timeslotId);
 		redisTemplate.opsForValue().set(key, capacity);
+
 		return capacity;
 	}
 

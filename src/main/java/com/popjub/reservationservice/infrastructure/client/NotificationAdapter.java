@@ -1,6 +1,8 @@
 package com.popjub.reservationservice.infrastructure.client;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,12 +27,13 @@ public class NotificationAdapter implements NotificationPort {
 	boolean flag;
 
 	@Override
-	public void sendReservationCreateNotification(Reservation reservation, String storeName, LocalTime startTime) {
+	public void sendReservationCreateNotification(UUID reservationId, Long userId, String storeName,
+		LocalDate reservationDate, LocalTime startTime) {
 		ReservationNotificationRequest request = new ReservationNotificationRequest(
-			reservation.getReservationId(),
-			reservation.getUserId(),
+			reservationId,
+			userId,
 			storeName,
-			reservation.getReservationDate(),
+			reservationDate,
 			startTime,
 			EventType.RESERVATION_COMPLETED
 		);
